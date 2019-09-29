@@ -19,14 +19,14 @@ namespace CoreTemplate.AuthHelp
         /// <returns></returns>
         public static string IssueJwt(TokenModel tokenModel)
         {
-            var dateTime = DateTime.Now;
+            var dateTime = DateTime.UtcNow;
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Jti,tokenModel.Uid.ToString()),
-                //new Claim("Project", tokenModel.Project),
                 new Claim(JwtRegisteredClaimNames.Iat, new DateTimeOffset(dateTime).ToUnixTimeSeconds().ToString(),ClaimValueTypes.Integer64),
+                new Claim(JwtRegisteredClaimNames.Exp,new DateTimeOffset(dateTime.AddSeconds(30000)).ToUnixTimeSeconds().ToString(),ClaimValueTypes.Integer64),
                 new Claim(JwtRegisteredClaimNames.Iss,"Temp"),
-                new Claim(JwtRegisteredClaimNames.Aud,"Temp"),
+                new Claim(JwtRegisteredClaimNames.Aud,"Temp")
             };
 
             //一个用户多个角色
@@ -37,10 +37,9 @@ namespace CoreTemplate.AuthHelp
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var jwt = new JwtSecurityToken(
-                issuer: "Temp",
-                audience: "Temp",
-                claims: claims, //声明集合
-                expires: dateTime.AddHours(24),
+                
+                claims: claims,
+                //expires: dateTime.AddSeconds(10),
                 signingCredentials: creds);
 
             var jwtHandler = new JwtSecurityTokenHandler();
@@ -58,12 +57,10 @@ namespace CoreTemplate.AuthHelp
         {
             var jwtHandler = new JwtSecurityTokenHandler();
             JwtSecurityToken jwtToken = jwtHandler.ReadJwtToken(jwtStr);
-            object role = new object(); ;
-            //object project = new object();
+            object role = new object();
             try
             {
-                jwtToken.Payload.TryGetValue("Role", out role);
-                //jwtToken.Payload.TryGetValue("Project", out project);
+                jwtToken.Payload.TryGetValue(ClaimTypes.Role, out role);
             }
             catch (Exception e)
             {
@@ -80,7 +77,7 @@ namespace CoreTemplate.AuthHelp
     }
 
     /// <summary>
-    /// 令牌
+    /// 令牌类
     /// </summary>
     public class TokenModel
     {

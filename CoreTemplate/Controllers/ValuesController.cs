@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoreTemplate.Controllers
@@ -10,6 +11,7 @@ namespace CoreTemplate.Controllers
     /// Values控制器
     /// </summary>
     [Route("api/[controller]")]
+    [Authorize(Policy = "AdminOrUser")]
     [ApiController]
     public class ValuesController : ControllerBase
     {

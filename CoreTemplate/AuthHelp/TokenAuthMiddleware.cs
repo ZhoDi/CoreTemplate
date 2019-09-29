@@ -35,7 +35,7 @@ namespace CoreTemplate.AuthHelper
             }
             var tokenHeader = httpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
 
-            TokenModel tm = JwtHelper.SerializeJWT(tokenHeader);
+            TokenModel tm = JwtHelper.SerializeJwt(tokenHeader);
 
 
             //授权

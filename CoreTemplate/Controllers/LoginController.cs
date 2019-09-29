@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CoreTemplate.AuthHelp;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,8 +16,8 @@ namespace CoreTemplate.Controllers
         public IActionResult GetToken(string name,string pass)
         {
             string jwtStr = string.Empty;
-
             //var userRole = await _sysUserInfoServices.GetUserRoleNameStr(name, pass);
+
             var userRole = "Admin,User";
             if (userRole != null)
             {
@@ -33,5 +34,6 @@ namespace CoreTemplate.Controllers
                 token = jwtStr
             });
         }
+
     }
 }

@@ -4,14 +4,14 @@
         <name>CoreTemplate</name>
     </assembly>
     <members>
-        <member name="M:CoreTemplate.AuthHelp.JwtHelper.IssueJWT(CoreTemplate.AuthHelp.TokenModel)">
+        <member name="M:CoreTemplate.AuthHelp.JwtHelper.IssueJwt(CoreTemplate.AuthHelp.TokenModel)">
             <summary>
             颁发
             </summary>
             <param name="tokenModel"></param>
             <returns></returns>
         </member>
-        <member name="M:CoreTemplate.AuthHelp.JwtHelper.SerializeJWT(System.String)">
+        <member name="M:CoreTemplate.AuthHelp.JwtHelper.SerializeJwt(System.String)">
             <summary>
             解析
             </summary>
@@ -20,7 +20,7 @@
         </member>
         <member name="T:CoreTemplate.AuthHelp.TokenModel">
             <summary>
-            令牌
+            令牌类
             </summary>
         </member>
         <member name="P:CoreTemplate.AuthHelp.TokenModel.Uid">

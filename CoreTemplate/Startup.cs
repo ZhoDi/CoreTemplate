@@ -5,10 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CoreTemplate.AuthHelper;
+using CoreTemplate.Domain.IRepositories;
+using CoreTemplate.EntityFrameworkCore;
+using CoreTemplate.EntityFrameworkCore.Repositories;
+using CoreTemplate.EntityFrameworkCore.Seed;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -89,14 +94,28 @@ namespace CoreTemplate
             #endregion
 
             #region 认证
-            services.AddAuthentication(options =>
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("User", policy => policy.RequireRole("User").Build());
+                options.AddPolicy("Admin", policy => policy.RequireRole("Admin").Build());
+                options.AddPolicy("AdminOrUser", policy => policy.RequireRole("Admin,User").Build());
+            })
+            .AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
             .AddJwtBearer(options =>
             {
-                options.Audience = Configuration["Authentication:Audience"];
+                //options.Audience = Configuration["Authentication:Audience"];
+                options.Events = new JwtBearerEvents()
+                {
+                    OnMessageReceived = context =>
+                    {
+                        context.Token = context.Request.Query["AccessToken"];
+                        return Task.CompletedTask;
+                    }
+                };
 
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -111,20 +130,35 @@ namespace CoreTemplate
                     ValidateIssuer = true,
                     RequireSignedTokens = true,
                     RequireExpirationTime = true,
-                    ValidateLifetime = true
-                    // 允许的服务器时间偏移量
-                    // ClockSkew = TimeSpan.FromSeconds(300),
+                    ValidateLifetime = true,
+                    //允许的服务器时间偏移量,不设置默认五分钟
+                     ClockSkew = TimeSpan.FromSeconds(10),
                 };
             });
             #endregion
 
-            #region 授权
-            services.AddAuthorization(options =>
+            #region 跨域
+            services.AddCors(options =>
             {
-                options.AddPolicy("RequireClient", policy => policy.RequireRole("Client").Build());
-                options.AddPolicy("RequireAdmin", policy => policy.RequireRole("Admin").Build());
-                options.AddPolicy("RequireAdminOrClient", policy => policy.RequireRole("Admin,Client").Build());
+                options.AddPolicy("CorsLocal",
+                    builder => builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials()
+                    .WithOrigins(
+                            Configuration["CorsLocal"]
+                                .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                        )
+                    );
             });
+            #endregion
+
+            #region MySql数据库
+            var connection = this.Configuration.GetValue<string>("ConnStr");
+            services.AddDbContext<TempDbContext>(options => options.UseMySql(connection));
+            services.BuildServiceProvider().GetService<TempDbContext>().Database.Migrate();
+            //注册仓储泛型
+            services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
             #endregion
         }
 
@@ -143,6 +177,7 @@ namespace CoreTemplate
                 });
                 #endregion
             }
+            app.UseCors("CorsLocal");
 
             //认证
             app.UseAuthentication();
@@ -153,6 +188,11 @@ namespace CoreTemplate
             app.UseStaticFiles();
 
             app.UseMvc();
+
+
+            ServiceLocator.Instance = app.ApplicationServices;
+
+            SeedData.SeedDb();
         }
     }
 }
