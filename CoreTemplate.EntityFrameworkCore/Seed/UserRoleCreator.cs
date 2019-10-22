@@ -28,26 +28,23 @@ namespace CoreTemplate.EntityFrameworkCore.Seed
                 {
                     var user = new User
                     {
-                        Name = ConstName.Admin,
+                        Name = "赵迪",
                         Email = "910824572@qq.com",
                         Mobile = "15737652771",
                         IsDeleted = false,
                         Avatar = "",
+                        PassWord = "123456",
                         Gender = 1,
                         Number = "1011150",
                     };
-
-                    //user.Password = new PasswordHasher<User>(new OptionsWrapper<PasswordHasherOptions>(new PasswordHasherOptions())).HashPassword(user, "admin");
-                    //user.SetNormalizedNames();
 
                     adminUserForHost = _context.Users.Add(user).Entity;
                     _context.SaveChanges();
 
                     //// 分配管理员角色
-                    //_context.UserRoles.Add(new UserRole(adminUserForHost.Id, adminRoleForHost.Id));
+                    _context.UserRoles.Add(new UserRole() { UserId = adminUserForHost.Id, RoleId = adminRoleForHost.Id });
                     _context.SaveChanges();
 
-                    _context.SaveChanges();
                 }
 
 

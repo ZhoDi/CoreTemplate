@@ -8,7 +8,7 @@ namespace CoreTemplate.EntityFrameworkCore.Seed
     {
         public static void SeedDb()
         {
-            //new UserRoleCreator().Create();
+            new UserRoleCreator().Create();
         }
     }
 }

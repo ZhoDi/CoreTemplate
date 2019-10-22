@@ -30,7 +30,7 @@ namespace CoreTemplate.AuthHelp
             };
 
             //一个用户多个角色
-            claims.AddRange(tokenModel.Role.Split(',').Select(s => new Claim(ClaimTypes.Role, s)));
+            claims.AddRange(tokenModel.Role.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => new Claim(ClaimTypes.Role, s)));
 
             //秘钥
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Temp_C421AAEE0D114E9C"));

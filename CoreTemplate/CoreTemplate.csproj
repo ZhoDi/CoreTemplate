@@ -11,6 +11,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="5.0.1" />
+    <PackageReference Include="Autofac.Extras.DynamicProxy" Version="4.5.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
@@ -18,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CoreTemplate.EntityFrameworkCore\CoreTemplate.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\CoreTemplate.Application\CoreTemplate.Application.csproj" />
   </ItemGroup>
 
 </Project>

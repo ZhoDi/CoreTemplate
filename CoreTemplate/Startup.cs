@@ -4,6 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using CoreTemplate.Application.IServices;
+using CoreTemplate.Application.Services;
 using CoreTemplate.AuthHelper;
 using CoreTemplate.Domain.IRepositories;
 using CoreTemplate.EntityFrameworkCore;
@@ -34,7 +38,7 @@ namespace CoreTemplate
 
         public IConfiguration Configuration { get; }
 
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(options =>
@@ -132,7 +136,7 @@ namespace CoreTemplate
                     RequireExpirationTime = true,
                     ValidateLifetime = true,
                     //允许的服务器时间偏移量,不设置默认五分钟
-                     ClockSkew = TimeSpan.FromSeconds(10),
+                    ClockSkew = TimeSpan.FromSeconds(10),
                 };
             });
             #endregion
@@ -141,7 +145,7 @@ namespace CoreTemplate
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsLocal",
-                    builder => builder.AllowAnyOrigin()
+                    build => build.AllowAnyOrigin()
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials()
@@ -153,13 +157,31 @@ namespace CoreTemplate
             });
             #endregion
 
+            #region AutoFac
+            //实例化 AutoFac 容器
+            var builder = new ContainerBuilder();
+
+            //注册示例
+            builder.RegisterType<UserServices>().As<IUserServices>().SingleInstance();
+
+            //将service 填充 AutoFac 容器生成器
+            builder.Populate(services);
+
+            //创建新容器
+            var ApplicationContainer = builder.Build();
+            #endregion
+
             #region MySql数据库
             var connection = this.Configuration.GetValue<string>("ConnStr");
             services.AddDbContext<TempDbContext>(options => options.UseMySql(connection));
             services.BuildServiceProvider().GetService<TempDbContext>().Database.Migrate();
+
             //注册仓储泛型
             services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
+            //services.AddScoped<IUserServices, UserServices>();
             #endregion
+
+            return new AutofacServiceProvider(ApplicationContainer);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

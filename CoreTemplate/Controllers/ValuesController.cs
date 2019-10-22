@@ -11,7 +11,7 @@ namespace CoreTemplate.Controllers
     /// Values控制器
     /// </summary>
     [Route("api/[controller]")]
-    [Authorize(Policy = "AdminOrUser")]
+    [Authorize(Policy = "Admin")]
     [ApiController]
     public class ValuesController : ControllerBase
     {

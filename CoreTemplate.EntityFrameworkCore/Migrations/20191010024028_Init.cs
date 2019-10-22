@@ -50,8 +50,7 @@ namespace CoreTemplate.EntityFrameworkCore.Migrations
                     Number = table.Column<string>(maxLength: 20, nullable: true),
                     PassWord = table.Column<string>(maxLength: 20, nullable: true),
                     CreateDate = table.Column<long>(nullable: false),
-                    IsDeleted = table.Column<bool>(nullable: false),
-                    IsOut = table.Column<bool>(nullable: false)
+                    IsDeleted = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {

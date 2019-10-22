@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoreTemplate.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(TempDbContext))]
-    [Migration("20190926062351_Init")]
+    [Migration("20191010024028_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,8 +50,6 @@ namespace CoreTemplate.EntityFrameworkCore.Migrations
                     b.Property<int>("Gender");
 
                     b.Property<bool>("IsDeleted");
-
-                    b.Property<bool>("IsOut");
 
                     b.Property<string>("Mobile")
                         .HasMaxLength(15);

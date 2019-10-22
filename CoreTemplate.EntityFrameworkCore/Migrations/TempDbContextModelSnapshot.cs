@@ -49,8 +49,6 @@ namespace CoreTemplate.EntityFrameworkCore.Migrations
 
                     b.Property<bool>("IsDeleted");
 
-                    b.Property<bool>("IsOut");
-
                     b.Property<string>("Mobile")
                         .HasMaxLength(15);
 
