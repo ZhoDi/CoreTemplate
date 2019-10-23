@@ -1,17 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Autofac;
+﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using CoreTemplate.Application.IServices;
-using CoreTemplate.Application.Services;
-using CoreTemplate.AuthHelper;
-using CoreTemplate.Domain.IRepositories;
 using CoreTemplate.EntityFrameworkCore;
-using CoreTemplate.EntityFrameworkCore.Repositories;
 using CoreTemplate.EntityFrameworkCore.Seed;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -20,12 +9,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using Swashbuckle.AspNetCore.Swagger;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace CoreTemplate
 {
@@ -36,6 +26,7 @@ namespace CoreTemplate
             Configuration = configuration;
         }
 
+        private static IContainer Container { get; set; }
         public IConfiguration Configuration { get; }
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
@@ -157,31 +148,17 @@ namespace CoreTemplate
             });
             #endregion
 
-            #region AutoFac
-            //实例化 AutoFac 容器
-            var builder = new ContainerBuilder();
-
-            //注册示例
-            builder.RegisterType<UserServices>().As<IUserServices>().SingleInstance();
-
-            //将service 填充 AutoFac 容器生成器
-            builder.Populate(services);
-
-            //创建新容器
-            var ApplicationContainer = builder.Build();
-            #endregion
-
             #region MySql数据库
             var connection = this.Configuration.GetValue<string>("ConnStr");
             services.AddDbContext<TempDbContext>(options => options.UseMySql(connection));
             services.BuildServiceProvider().GetService<TempDbContext>().Database.Migrate();
 
             //注册仓储泛型
-            services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
+            //services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
             //services.AddScoped<IUserServices, UserServices>();
             #endregion
 
-            return new AutofacServiceProvider(ApplicationContainer);
+            return RegisterAutofac(services);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -211,10 +188,24 @@ namespace CoreTemplate
 
             app.UseMvc();
 
+            //初始化数据
+            SeedData.SeedDb(Container);
+        }
 
-            ServiceLocator.Instance = app.ApplicationServices;
-
-            SeedData.SeedDb();
+        public IServiceProvider RegisterAutofac(IServiceCollection services)
+        {
+            //实例化Autofac容器
+            var builder = new ContainerBuilder();
+            //将Services中的服务填充到Autofac中
+            builder.Populate(services);
+            ////注册示例
+            //builder.RegisterType<UserServices>().As<IUserServices>();
+            //新模块组件注册    
+            builder.RegisterModule<AutofacModuleRegister>();
+            //创建容器
+            Container = builder.Build();
+            //第三方IOC接管 core内置DI容器 
+            return new AutofacServiceProvider(Container);
         }
     }
 }

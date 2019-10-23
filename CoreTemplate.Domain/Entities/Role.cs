@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CoreTemplate.Domain.Entities
 {
-    public class Role : Entity
+    public class Role : Entity<int>
     {
         [MaxLength(10)]
         public string Name { get; set; }

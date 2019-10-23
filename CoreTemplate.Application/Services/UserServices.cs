@@ -22,7 +22,7 @@ namespace CoreTemplate.Application.Services
 
         public string GetUserRoleNameStr(string name, string pwd)
         {
-           var user= _UserRepository.FirstOrDefault(p => p.Name == name && p.PassWord == pwd);
+            var user = _UserRepository.FirstOrDefault(p => p.Name == name && p.PassWord == pwd);
             if (user == null)
             {
                 return "";

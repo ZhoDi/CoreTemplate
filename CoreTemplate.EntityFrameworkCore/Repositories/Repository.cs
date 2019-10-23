@@ -1,14 +1,17 @@
 ﻿using CoreTemplate.Domain;
+using CoreTemplate.Domain.Extensions;
 using CoreTemplate.Domain.IRepositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace CoreTemplate.EntityFrameworkCore.Repositories
 {
-    public class Repository<TEntity, TPrimaryKey> : IRepository<TEntity, TPrimaryKey> where TEntity : Entity<TPrimaryKey>
+    public class Repository<TEntity, TPrimaryKey> : IRepository<TEntity, TPrimaryKey> where TEntity : class, IEntity<TPrimaryKey>
     {
         //定义数据访问上下文对象
         protected readonly TempDbContext _dbContext;
@@ -23,12 +26,40 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         }
 
         /// <summary>
+        /// Gets DbSet for given entity.
+        /// </summary>
+        public virtual DbSet<TEntity> Table => _dbContext.Set<TEntity>();
+
+        #region Select
+        public IQueryable<TEntity> GetAll()
+        {
+            return Table;
+        }
+
+        public IQueryable<TEntity> GetAllIncluding(params Expression<Func<TEntity, object>>[] propertySelectors)
+        {
+            if (propertySelectors.IsNullOrEmpty())
+            {
+                return GetAll();
+            }
+
+            var query = GetAll();
+
+            foreach (var propertySelector in propertySelectors)
+            {
+                query = query.Include(propertySelector);
+            }
+
+            return query;
+        }
+
+        /// <summary>
         /// 获取实体集合
         /// </summary>
         /// <returns></returns>
         public List<TEntity> GetAllList()
         {
-            return _dbContext.Set<TEntity>().ToList();
+            return GetAll().ToList();
         }
 
         /// <summary>
@@ -38,7 +69,7 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// <returns></returns>
         public List<TEntity> GetAllList(Expression<Func<TEntity, bool>> predicate)
         {
-            return _dbContext.Set<TEntity>().Where(predicate).ToList();
+            return GetAll().Where(predicate).ToList();
         }
 
         /// <summary>
@@ -48,7 +79,7 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// <returns></returns>
         public TEntity Get(TPrimaryKey id)
         {
-            return _dbContext.Set<TEntity>().FirstOrDefault(CreateEqualityExpressionForId(id));
+            return GetAll().FirstOrDefault(CreateEqualityExpressionForId(id));
         }
 
         /// <summary>
@@ -58,9 +89,79 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// <returns></returns>
         public TEntity FirstOrDefault(Expression<Func<TEntity, bool>> predicate)
         {
-            return _dbContext.Set<TEntity>().FirstOrDefault(predicate);
+            return GetAll().FirstOrDefault(predicate);
         }
 
+
+        /// <summary>
+        /// 分页查询
+        /// </summary>
+        /// <param name="startPage">页码</param>
+        /// <param name="pageSize">单页数据数</param>
+        /// <param name="rowCount">行数</param>
+        /// <param name="where">条件</param>
+        /// <param name="order">排序</param>
+        /// <returns></returns>
+        public IQueryable<TEntity> FindPageList(int startPage, int pageSize, out int rowCount, Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, object>> order = null, string orderType = "asc")
+        {
+            var result = Table.Where(where);
+
+            if (order != null)
+            {
+                if (orderType == "desc")
+                    result = result.OrderByDescending(order);
+                else
+                    result = result.OrderBy(order);
+            }
+            else
+            {
+                result = result.OrderBy(m => m.Id);
+            }
+            rowCount = result.Count();
+            return result.Skip((startPage - 1) * pageSize).Take(pageSize);
+        }
+
+        /// <summary>
+        /// 通过Sql分页查询
+        /// </summary>
+        /// <param name="pageIndex"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="totalRecord"></param>
+        /// <param name="sql"></param>
+        /// <param name="order"></param>
+        /// <param name="orderType"></param>
+        /// <returns></returns>
+        public IQueryable<TEntity> FindPageListFromSql(int pageIndex, int pageSize, out int totalRecord, string sql, Expression<Func<TEntity, object>> order, string orderType = "asc")
+        {
+            var _list = Table.FromSql(sql);
+            totalRecord = _list.Count();
+            if (order != null)
+            {
+                if (orderType == "asc")
+                    _list = _list.OrderBy(order);
+                else
+                    _list = _list.OrderByDescending(order);
+            }
+
+            _list = _list.Skip((pageIndex - 1) * pageSize).Take(pageSize);
+            return _list;
+        }
+
+        /// <summary>
+        /// 通过Sql查询
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <returns></returns>
+        public IQueryable<TEntity> GetFromSql(string sql)
+        {
+            var _list = Table.FromSql(sql);
+
+            return _list;
+        }
+
+        #endregion
+
+        #region Insert
         /// <summary>
         /// 新增实体
         /// </summary>
@@ -69,7 +170,7 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// <returns></returns>
         public TEntity Insert(TEntity entity, bool autoSave = true)
         {
-            _dbContext.Set<TEntity>().Add(entity);
+            Table.Add(entity);
             if (autoSave)
                 Save();
             return entity;
@@ -77,7 +178,7 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
 
         public void BatchInsert(List<TEntity> entitys)
         {
-            _dbContext.Set<TEntity>().AddRange(entitys);
+            Table.AddRange(entitys);
             Save();
         }
 
@@ -88,19 +189,19 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// <param name="autoSave">是否立即执行保存</param>
         public TEntity Update(TEntity entity, bool autoSave = true)
         {
-            var obj = Get(entity.Id);
-            EntityToEntity(entity, obj);
+            AttachIfNot(entity);
+            _dbContext.Entry(entity).State = EntityState.Modified;
             if (autoSave)
                 Save();
             return entity;
         }
-        private void EntityToEntity<T>(T pTargetObjSrc, T pTargetObjDest)
-        {
-            foreach (var mItem in typeof(T).GetProperties())
-            {
-                mItem.SetValue(pTargetObjDest, mItem.GetValue(pTargetObjSrc, new object[] { }), null);
-            }
-        }
+        //private void EntityToEntity<T>(T pTargetObjSrc, T pTargetObjDest)
+        //{
+        //    foreach (var mItem in typeof(T).GetProperties())
+        //    {
+        //        mItem.SetValue(pTargetObjDest, mItem.GetValue(pTargetObjSrc, new object[] { }), null);
+        //    }
+        //}
         /// <summary>
         /// 新增或更新实体
         /// </summary>
@@ -114,13 +215,29 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         }
 
         /// <summary>
+        /// 实体类不存在,追加到上下文中
+        /// </summary>
+        /// <param name="entity"></param>
+        public void AttachIfNot(TEntity entity)
+        {
+            if (!Table.Local.Contains(entity))
+            {
+                Table.Attach(entity);
+            }
+        }
+
+        #endregion
+
+        #region Delete
+        /// <summary>
         /// 删除实体
         /// </summary>
         /// <param name="entity">要删除的实体</param>
         /// <param name="autoSave">是否立即执行保存</param>
         public void Delete(TEntity entity, bool autoSave = true)
         {
-            _dbContext.Set<TEntity>().Remove(entity);
+            AttachIfNot(entity);
+            Table.Remove(entity);
             if (autoSave)
                 Save();
         }
@@ -132,7 +249,7 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// <param name="autoSave">是否立即执行保存</param>
         public void Delete(TPrimaryKey id, bool autoSave = true)
         {
-            _dbContext.Set<TEntity>().Remove(Get(id));
+            Table.Remove(Get(id));
             if (autoSave)
                 Save();
         }
@@ -142,39 +259,26 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// </summary>
         /// <param name="where">lambda表达式</param>
         /// <param name="autoSave">是否自动保存</param>
-        public void Delete(Expression<Func<TEntity, bool>> where, bool autoSave = true)
+        public void Delete(Expression<Func<TEntity, bool>> predicate, bool autoSave = true)
         {
-            _dbContext.Set<TEntity>().Where(where).ToList().ForEach(it => _dbContext.Set<TEntity>().Remove(it));
+
+            DeleteRange(GetAll().Where(predicate));
             if (autoSave)
                 Save();
         }
+
         /// <summary>
-        /// 分页查询
+        /// 批量删除
         /// </summary>
-        /// <param name="startPage">页码</param>
-        /// <param name="pageSize">单页数据数</param>
-        /// <param name="rowCount">行数</param>
-        /// <param name="where">条件</param>
-        /// <param name="order">排序</param>
-        /// <returns></returns>
-        public IQueryable<TEntity> LoadPageList(int startPage, int pageSize, out int rowCount, Expression<Func<TEntity, bool>> where = null, Expression<Func<TEntity, object>> order = null, string orderType = "asc")
+        /// <param name="entities"></param>
+        public void DeleteRange(IQueryable<TEntity> entities)
         {
-            var result = from p in _dbContext.Set<TEntity>()
-                         select p;
-            if (where != null)
-                result = result.Where(where);
-            if (order != null)
-            {
-                if (orderType == "desc")
-                    result = result.OrderByDescending(order);
-                else
-                    result = result.OrderBy(order);
-            }
-            else
-                result = result.OrderBy(m => m.Id);
-            rowCount = result.Count();
-            return result.Skip((startPage - 1) * pageSize).Take(pageSize);
+            Table.RemoveRange(entities);
         }
+
+
+        #endregion
+
 
         /// <summary>
         /// 事务性保存
@@ -199,5 +303,6 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
 
             return Expression.Lambda<Func<TEntity, bool>>(lambdaBody, lambdaParam);
         }
+
     }
 }

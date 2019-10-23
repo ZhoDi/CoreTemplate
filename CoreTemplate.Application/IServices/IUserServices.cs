@@ -6,6 +6,6 @@ namespace CoreTemplate.Application.IServices
 {
     public interface IUserServices
     {
-        string GetUserRoleNameStr(string name,string pwd);
+        string GetUserRoleNameStr(string name, string pwd);
     }
 }

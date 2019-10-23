@@ -21,10 +21,10 @@ namespace CoreTemplate.Controllers
         }
 
         [HttpGet("GetToken{name}/{pass}")]
-        public IActionResult GetToken(string name,string pass)
+        public IActionResult GetToken(string name, string pass)
         {
             string jwtStr = string.Empty;
-            var userRole =  _UserService.GetUserRoleNameStr(name, pass);
+            var userRole = _UserService.GetUserRoleNameStr(name, pass);
 
             //var userRole = "Admin,User";
             if (userRole != null)

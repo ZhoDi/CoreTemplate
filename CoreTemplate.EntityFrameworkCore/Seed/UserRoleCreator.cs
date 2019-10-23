@@ -1,4 +1,5 @@
-﻿using CoreTemplate.Domain.Entities;
+﻿using Autofac;
+using CoreTemplate.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -10,11 +11,16 @@ namespace CoreTemplate.EntityFrameworkCore.Seed
 {
     public class UserRoleCreator
     {
+        private static IContainer Container;
+        public UserRoleCreator(IContainer container)
+        {
+            Container = container;
+        }
         public void Create()
         {
-            using (var scope = ServiceLocator.Instance.CreateScope())
+            using (var scope = Container.BeginLifetimeScope())
             {
-                var _context = scope.ServiceProvider.GetService<TempDbContext>();
+                var _context = scope.Resolve<TempDbContext>();
 
                 var adminRoleForHost = _context.Roles.IgnoreQueryFilters().FirstOrDefault(r => r.Name == ConstName.Admin);
                 if (adminRoleForHost == null)

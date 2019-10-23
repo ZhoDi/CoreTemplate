@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoreTemplate.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(TempDbContext))]
-    [Migration("20191010024028_Init")]
+    [Migration("20191023080344_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CoreTemplate.Domain.Entities
 {
-    public class User : Entity
+    public class User : Entity<int>
     {
         /// <summary>
         /// 用户姓名

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace CoreTemplate.Domain.IRepositories
 {
@@ -11,8 +12,15 @@ namespace CoreTemplate.Domain.IRepositories
 
     }
 
-    public interface IRepository<TEntity, TPrimaryKey> : IRepository where TEntity : Entity<TPrimaryKey>
+    public interface IRepository<TEntity, TPrimaryKey> : IRepository where TEntity : class, IEntity<TPrimaryKey>
     {
+
+        /// <summary>
+        /// 获取全部
+        /// </summary>
+        IQueryable<TEntity> GetAll();
+        IQueryable<TEntity> GetAllIncluding(params Expression<Func<TEntity, object>>[] propertySelectors);
+
         /// <summary>
         /// 获取实体集合
         /// </summary>
@@ -39,6 +47,23 @@ namespace CoreTemplate.Domain.IRepositories
         /// <param name="predicate">lambda表达式条件</param>
         /// <returns></returns>
         TEntity FirstOrDefault(Expression<Func<TEntity, bool>> predicate);
+
+        /// <summary>
+        /// 分页获取数据
+        /// </summary>
+        /// <param name="startPage">起始页</param>
+        /// <param name="pageSize">页面条目</param>
+        /// <param name="rowCount">数据总数</param>
+        /// <param name="where">查询条件</param>
+        /// <param name="order">排序</param>
+        /// <returns></returns>
+        IQueryable<TEntity> FindPageList(int startPage, int pageSize, out int rowCount, Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, object>> order, string orderType = "asc");
+
+        IQueryable<TEntity> FindPageListFromSql(int pageIndex, int pageSize, out int totalRecord, string sql, Expression<Func<TEntity, object>> order, string orderType = "asc");
+
+        IQueryable<TEntity> GetFromSql(string sql);
+
+        void AttachIfNot(TEntity entity);
 
         /// <summary>
         /// 新增实体
@@ -87,15 +112,11 @@ namespace CoreTemplate.Domain.IRepositories
         void Delete(Expression<Func<TEntity, bool>> where, bool autoSave = true);
 
         /// <summary>
-        /// 分页获取数据
+        /// 批量删除
         /// </summary>
-        /// <param name="startPage">起始页</param>
-        /// <param name="pageSize">页面条目</param>
-        /// <param name="rowCount">数据总数</param>
-        /// <param name="where">查询条件</param>
-        /// <param name="order">排序</param>
-        /// <returns></returns>
-        IQueryable<TEntity> LoadPageList(int startPage, int pageSize, out int rowCount, Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, object>> order, string orderType = "asc");
+        /// <param name="entities"></param>
+        void DeleteRange(IQueryable<TEntity> entities);
+
 
         void Save();
     }
