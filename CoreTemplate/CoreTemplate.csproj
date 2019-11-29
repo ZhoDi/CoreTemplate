@@ -21,4 +21,9 @@
     <ProjectReference Include="..\CoreTemplate.Application\CoreTemplate.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="AOP\" />
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
 </Project>

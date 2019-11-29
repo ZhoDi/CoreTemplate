@@ -6,7 +6,7 @@
     <members>
         <member name="M:CoreTemplate.AuthHelp.JwtHelper.IssueJwt(CoreTemplate.AuthHelp.TokenModel)">
             <summary>
-            颁发
+            根据传进来的TokenModel生成taokn字符串
             </summary>
             <param name="tokenModel"></param>
             <returns></returns>

@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
@@ -12,38 +13,66 @@ namespace CoreTemplate.AuthHelp
 {
     public class JwtHelper
     {
+        public static IConfiguration Configuration { get; set; }
+
+        public JwtHelper(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
         /// <summary>
-        /// 颁发
+        /// 根据传进来的TokenModel生成taokn字符串
         /// </summary>
         /// <param name="tokenModel"></param>
         /// <returns></returns>
         public static string IssueJwt(TokenModel tokenModel)
         {
-            var dateTime = DateTime.UtcNow;
+            //通过ConfigurationBuilder获取json配置
+            var config = new ConfigurationBuilder()
+               //将配置文件的数据加载到内存中
+               .AddInMemoryCollection()
+               //指定配置文件所在的目录
+               .SetBasePath(Directory.GetCurrentDirectory())
+               //指定加载的配置文件
+               .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+               //编译成对象
+               .Build();   
+            var time = DateTime.Now;
             var claims = new List<Claim>
             {
+                //JWT ID的唯一标识
                 new Claim(JwtRegisteredClaimNames.Jti,tokenModel.Uid.ToString()),
-                new Claim(JwtRegisteredClaimNames.Iat, new DateTimeOffset(dateTime).ToUnixTimeSeconds().ToString(),ClaimValueTypes.Integer64),
-                new Claim(JwtRegisteredClaimNames.Exp,new DateTimeOffset(dateTime.AddSeconds(30000)).ToUnixTimeSeconds().ToString(),ClaimValueTypes.Integer64),
-                new Claim(JwtRegisteredClaimNames.Iss,"Temp"),
-                new Claim(JwtRegisteredClaimNames.Aud,"Temp")
+
+                //Issued At，JWT颁发的时间，用于验证过期
+                new Claim(JwtRegisteredClaimNames.Iat,new DateTimeOffset(time).ToUnixTimeSeconds().ToString(),ClaimValueTypes.Integer64),
+
+                //过期时间
+                new Claim(JwtRegisteredClaimNames.Exp,new DateTimeOffset(time).AddDays(1).ToUnixTimeSeconds().ToString(),ClaimValueTypes.Integer64),
+
+                //jwt签发者
+                new Claim(JwtRegisteredClaimNames.Iss,config["Authentication:JwtBearer:Issuer"]),
+
+                //jwt接收者
+                new Claim(JwtRegisteredClaimNames.Aud,config["Authentication:JwtBearer:Audience"])
             };
 
             //一个用户多个角色
             claims.AddRange(tokenModel.Role.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => new Claim(ClaimTypes.Role, s)));
 
             //秘钥
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Temp_C421AAEE0D114E9C"));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Authentication:JwtBearer:SecurityKey"]));
+
+            //加密
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var jwt = new JwtSecurityToken(
-                
+                //上面生命的"身份单元集合"相当于身份证上的姓名,性别...等基本信息
                 claims: claims,
-                //expires: dateTime.AddSeconds(10),
+
+                //凭证
                 signingCredentials: creds);
 
-            var jwtHandler = new JwtSecurityTokenHandler();
-            var encodedJwt = jwtHandler.WriteToken(jwt);
+            //生成JWT字符串
+            var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
             return encodedJwt;
         }

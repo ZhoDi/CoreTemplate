@@ -1,10 +1,14 @@
 ﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using AutoMapper;
+using CoreTemplate.Config;
+//using AutoMapper;
 using CoreTemplate.EntityFrameworkCore;
 using CoreTemplate.EntityFrameworkCore.Seed;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -14,6 +18,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -43,6 +48,13 @@ namespace CoreTemplate
                     ////设置时间格式
                     //options.SerializerSettings.DateFormatString = "yyyy-MM-dd";
                 });
+
+            #region 其他配置
+            //配置文件在哪个程序集中，本文是在Startup对应的程序集中
+            services.AddAutoMapper(typeof(Startup));
+            services.AddMemoryCache();
+            #endregion
+
             #region Swagger
             services.AddSwaggerGen(c =>
             {
@@ -65,6 +77,7 @@ namespace CoreTemplate
                         Url = "http://www.zhaodi.top/"
                     }
                 });
+
                 //获取注释xml文件,没有它也行,但是接口没注释
                 //获取程序根目录
                 //var basePath = Path.GetDirectoryName(typeof(Program).Assembly.Location);
@@ -72,64 +85,26 @@ namespace CoreTemplate
                 var xmlPath = Path.Combine(basePath, "CoreTemplate.xml");
                 c.IncludeXmlComments(xmlPath, true);//true,显示控制器注释
 
+
+                #region 添加权限验证
                 //Token绑定到ConfigureServices
-                //添加header验证信息
-                //c.OperationFilter<SwaggerHeader>();
                 var security = new Dictionary<string, IEnumerable<string>> { { "CoreTemplate", new string[] { } }, };
+
                 c.AddSecurityRequirement(security);
-                //方案名称“Blog.Core”可自定义，上下一致即可
+
                 c.AddSecurityDefinition("CoreTemplate", new ApiKeyScheme
                 {
-                    Description = "JWT授权(数据将在请求头中进行传输) 直接在下框中输入Bearer {token}（注意两者之间是一个空格）",
+                    Description = "JWT授权直接在下框中输入Bearer {token},空格不可省略",
                     Name = "Authorization",//jwt默认的参数名称
                     In = "header",//jwt默认存放Authorization信息的位置(请求头中)
                     Type = "apiKey"
                 });
+                #endregion
             });
             #endregion
 
-            #region 认证
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("User", policy => policy.RequireRole("User").Build());
-                options.AddPolicy("Admin", policy => policy.RequireRole("Admin").Build());
-                options.AddPolicy("AdminOrUser", policy => policy.RequireRole("Admin,User").Build());
-            })
-            .AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                //options.Audience = Configuration["Authentication:Audience"];
-                options.Events = new JwtBearerEvents()
-                {
-                    OnMessageReceived = context =>
-                    {
-                        context.Token = context.Request.Query["AccessToken"];
-                        return Task.CompletedTask;
-                    }
-                };
-
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    //设置令牌值
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["Authentication:SecurityKey"])),
-                    ValidIssuer = Configuration["Authentication:Issuer"],
-                    ValidAudience = Configuration["Authentication:Audience"],
-
-                    //开启验证
-                    ValidateIssuerSigningKey = true,
-                    ValidateAudience = true,
-                    ValidateIssuer = true,
-                    RequireSignedTokens = true,
-                    RequireExpirationTime = true,
-                    ValidateLifetime = true,
-                    //允许的服务器时间偏移量,不设置默认五分钟
-                    ClockSkew = TimeSpan.FromSeconds(10),
-                };
-            });
+            #region 授权
+            AuthConfigurer.Configure(services, Configuration);
             #endregion
 
             #region 跨域
@@ -148,7 +123,7 @@ namespace CoreTemplate
             });
             #endregion
 
-            #region MySql数据库
+            #region MySql
             var connection = this.Configuration.GetValue<string>("ConnStr");
             services.AddDbContext<TempDbContext>(options => options.UseMySql(connection));
             services.BuildServiceProvider().GetService<TempDbContext>().Database.Migrate();
@@ -176,15 +151,15 @@ namespace CoreTemplate
                 });
                 #endregion
             }
-            app.UseCors("CorsLocal");
+            app.UseStaticFiles();
 
-            //认证
+            app.UseCors("CorsLocal");
+            //官方认证
             app.UseAuthentication();
 
             //个人认证
             //app.UseMiddleware<TokenAuthMiddleware>();
 
-            app.UseStaticFiles();
 
             app.UseMvc();
 
@@ -200,7 +175,7 @@ namespace CoreTemplate
             builder.Populate(services);
             ////注册示例
             //builder.RegisterType<UserServices>().As<IUserServices>();
-            //新模块组件注册    
+            //新模块组件注册
             builder.RegisterModule<AutofacModuleRegister>();
             //创建容器
             Container = builder.Build();

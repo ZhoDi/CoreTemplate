@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using AutoMapper;
 using CoreTemplate.Domain.IRepositories;
 using CoreTemplate.EntityFrameworkCore.Repositories;
 using System;
@@ -11,6 +12,7 @@ namespace CoreTemplate
 {
     public class AutofacModuleRegister : Autofac.Module
     {
+
         //重写Autofac管道Load方法，在这里注册注入
         protected override void Load(ContainerBuilder builder)
         {
@@ -20,6 +22,11 @@ namespace CoreTemplate
 
             //注册仓储泛型
             builder.RegisterGeneric(typeof(Repository<,>)).As(typeof(IRepository<,>)).InstancePerLifetimeScope();
+
+            //注册AutoMapper
+            builder.RegisterType<Mapper>().As<IMapper>();
+
+            //builder.Register<IMapper>(ctx => new Mapper(ctx.Resolve<IConfigurationProvider>(), ctx.Resolve)).InstancePerDependency();
         }
 
     }
