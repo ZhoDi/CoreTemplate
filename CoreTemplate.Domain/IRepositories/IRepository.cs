@@ -7,18 +7,15 @@ using System.Threading.Tasks;
 
 namespace CoreTemplate.Domain.IRepositories
 {
-    public interface IRepository
-    {
 
-    }
-
-    public interface IRepository<TEntity, TPrimaryKey> : IRepository where TEntity : class, IEntity<TPrimaryKey>
+    public interface IRepository<TEntity, TPrimaryKey> where TEntity : class, IEntity<TPrimaryKey>
     {
 
         /// <summary>
         /// 获取全部
         /// </summary>
         IQueryable<TEntity> GetAll();
+
         IQueryable<TEntity> GetAllIncluding(params Expression<Func<TEntity, object>>[] propertySelectors);
 
         /// <summary>
@@ -59,8 +56,23 @@ namespace CoreTemplate.Domain.IRepositories
         /// <returns></returns>
         IQueryable<TEntity> FindPageList(int startPage, int pageSize, out int rowCount, Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, object>> order, string orderType = "asc");
 
+        /// <summary>
+        /// sql分页获取数据
+        /// </summary>
+        /// <param name="pageIndex"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="totalRecord"></param>
+        /// <param name="sql"></param>
+        /// <param name="order"></param>
+        /// <param name="orderType"></param>
+        /// <returns></returns>
         IQueryable<TEntity> FindPageListFromSql(int pageIndex, int pageSize, out int totalRecord, string sql, Expression<Func<TEntity, object>> order, string orderType = "asc");
 
+        /// <summary>
+        /// sql语句
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <returns></returns>
         IQueryable<TEntity> GetFromSql(string sql);
 
         void AttachIfNot(TEntity entity);
@@ -116,7 +128,6 @@ namespace CoreTemplate.Domain.IRepositories
         /// </summary>
         /// <param name="entities"></param>
         void DeleteRange(IQueryable<TEntity> entities);
-
 
         void Save();
     }

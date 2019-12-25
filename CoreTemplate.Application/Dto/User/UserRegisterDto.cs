@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CoreTemplate.Application.Dto.User
 {
-    public class UserRegisterDto
+    public class UserRegisterDto:Dto
     {
         /// <summary>
         /// 用户姓名

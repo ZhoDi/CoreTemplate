@@ -68,8 +68,8 @@
 
     <script src="swagger-ui-bundle.js"></script>
     <script src="swagger-ui-standalone-preset.js"></script>
-    <script src="ui/sbp.js"></script>
-    <script src="ui/sbp.swagger.js"></script>
+    <script src="ui/abp.js"></script>
+    <script src="ui/abp.swagger.js"></script>
     <script>
         window.onload = function () {
             var configObject = JSON.parse('%(ConfigObject)');
@@ -79,7 +79,7 @@
             configObject.presets = [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset];
             configObject.layout = "StandaloneLayout";
             configObject.requestInterceptor = function (request) {
-                var token = sbp.auth.getToken();
+                var token = abp.auth.getToken();
                 request.headers.Authorization = token ? "Bearer " + token : null;
                 return request;
             };
@@ -87,10 +87,10 @@
                 configObject.oauth2RedirectUrl = window.location + "oauth2-redirect.html"; // use the built-in default
             }
             function getAuthorizeButtonText() {
-                return sbp.auth.getToken() ? '注销' : '登录';
+                return abp.auth.getToken() ? '注销' : '登录';
             }
             function getAuthorizeButtonCssClass() {
-                return sbp.auth.getToken() ? 'cancel' : 'authorize';
+                return abp.auth.getToken() ? 'cancel' : 'authorize';
             }
             configObject.plugins = [
                 function (system) {
@@ -106,15 +106,15 @@
                                         },
                                         onClick: function () {
                                             var authorizeButton = document.getElementById('authorize');
-                                            if (sbp.auth.getToken()) {
-                                                sbp.swagger.logout();
+                                            if (abp.auth.getToken()) {
+                                                abp.swagger.logout();
                                                 authorizeButton.innerText = getAuthorizeButtonText();
                                                 authorizeButton.className = 'btn ' + getAuthorizeButtonCssClass();
                                             } else {
-                                                sbp.swagger.openAuthDialog(function () {
+                                                abp.swagger.openAuthDialog(function () {
                                                     authorizeButton.innerText = getAuthorizeButtonText();
                                                     authorizeButton.className = 'btn ' + getAuthorizeButtonCssClass();
-                                                    sbp.swagger.closeAuthDialog();
+                                                    abp.swagger.closeAuthDialog();
                                                 });
                                             }
                                         }

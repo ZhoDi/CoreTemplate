@@ -43,19 +43,6 @@
             令牌类型
             </summary>
         </member>
-        <member name="M:CoreTemplate.AuthHelper.TokenAuthMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate)">
-            <summary>
-            构造函数
-            </summary>
-            <param name="next"></param>
-        </member>
-        <member name="M:CoreTemplate.AuthHelper.TokenAuthMiddleware.Invoke(Microsoft.AspNetCore.Http.HttpContext)">
-            <summary>
-            验证
-            </summary>
-            <param name="httpContext"></param>
-            <returns></returns>
-        </member>
         <member name="T:CoreTemplate.Controllers.ValuesController">
             <summary>
             Values控制器

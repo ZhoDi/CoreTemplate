@@ -40,7 +40,7 @@ namespace CoreTemplate.Domain
     /// <summary>
     /// 定义默认主键类型为Guid的实体基类
     /// </summary>
-    public class Entity : Entity<Guid>
+    public class Entity : Entity<int>
     {
 
     }

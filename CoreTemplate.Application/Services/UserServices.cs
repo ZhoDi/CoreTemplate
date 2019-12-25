@@ -10,19 +10,23 @@ using System.Text;
 
 namespace CoreTemplate.Application.Services
 {
-    public class UserServices : IUserServices
+    public class UserServices : BaseServices<User,UserDto, int>, IUserServices
     {
         private readonly IRepository<User, int> _UserRepository;
         private readonly IRepository<UserRole, int> _UserRoleRepository;
         private readonly IRepository<Role, int> _RoleRepository;
-        private readonly IMapper _Mapper;
 
-        public UserServices(IRepository<User, int> UserRepository, IRepository<UserRole, int> UserRoleRepository, IRepository<Role, int> RoleRepository,IMapper mapper)
+        public UserServices(IRepository<User, int> UserRepository, IRepository<UserRole, int> UserRoleRepository, IRepository<Role, int> RoleRepository,IMapper Mapper):base(UserRepository, Mapper)
         {
             _UserRepository = UserRepository;
             _UserRoleRepository = UserRoleRepository;
             _RoleRepository = RoleRepository;
-            _Mapper = mapper;
+        }
+
+        public User GetUserInfoByName(string name)
+        {
+            var user = _UserRepository.FirstOrDefault(p => p.Name == name);
+            return user;
         }
 
         public string GetUserRoleNameStr(string name, string pwd)

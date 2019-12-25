@@ -14,7 +14,7 @@ namespace CoreTemplate.Domain
         //bool IsTransient();
     }
 
-    public interface IEntity : IEntity<Guid>
+    public interface IEntity : IEntity<int>
     {
 
     }

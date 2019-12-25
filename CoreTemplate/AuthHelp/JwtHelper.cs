@@ -13,12 +13,6 @@ namespace CoreTemplate.AuthHelp
 {
     public class JwtHelper
     {
-        public static IConfiguration Configuration { get; set; }
-
-        public JwtHelper(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
         /// <summary>
         /// 根据传进来的TokenModel生成taokn字符串
         /// </summary>
@@ -35,7 +29,7 @@ namespace CoreTemplate.AuthHelp
                //指定加载的配置文件
                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                //编译成对象
-               .Build();   
+               .Build();
             var time = DateTime.Now;
             var claims = new List<Claim>
             {

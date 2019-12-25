@@ -1,13 +1,16 @@
 ﻿using CoreTemplate.Application.Dto.User;
+using CoreTemplate.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace CoreTemplate.Application.IServices
 {
-    public interface IUserServices
+    public interface IUserServices: IBaseServices<User,UserDto, int>
     {
         string GetUserRoleNameStr(string name, string pwd);
+
+        User GetUserInfoByName(string name);
 
         void RegisterUser(UserRegisterDto userRegisterDto);
     }

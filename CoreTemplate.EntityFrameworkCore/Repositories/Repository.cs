@@ -13,6 +13,7 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
 {
     public class Repository<TEntity, TPrimaryKey> : IRepository<TEntity, TPrimaryKey> where TEntity : class, IEntity<TPrimaryKey>
     {
+
         //定义数据访问上下文对象
         protected readonly TempDbContext _dbContext;
 
@@ -176,6 +177,10 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
             return entity;
         }
 
+        /// <summary>
+        /// 批量新增
+        /// </summary>
+        /// <param name="entitys"></param>
         public void BatchInsert(List<TEntity> entitys)
         {
             Table.AddRange(entitys);
@@ -195,6 +200,7 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
                 Save();
             return entity;
         }
+
         //private void EntityToEntity<T>(T pTargetObjSrc, T pTargetObjDest)
         //{
         //    foreach (var mItem in typeof(T).GetProperties())
@@ -295,12 +301,14 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// <returns></returns>
         protected static Expression<Func<TEntity, bool>> CreateEqualityExpressionForId(TPrimaryKey id)
         {
+            //参数
             var lambdaParam = Expression.Parameter(typeof(TEntity));
+            //比较==
             var lambdaBody = Expression.Equal(
                 Expression.PropertyOrField(lambdaParam, "Id"),
                 Expression.Constant(id, typeof(TPrimaryKey))
                 );
-
+            //生成表达式
             return Expression.Lambda<Func<TEntity, bool>>(lambdaBody, lambdaParam);
         }
 
