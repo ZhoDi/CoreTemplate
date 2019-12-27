@@ -32,26 +32,61 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         public virtual DbSet<TEntity> Table => _dbContext.Set<TEntity>();
 
         #region Select
+        /// <summary>
+        /// 获取集合
+        /// </summary>
+        /// <returns></returns>
         public IQueryable<TEntity> GetAll()
         {
-            return Table;
+            return GetAllIncluding();
         }
 
+        /// <summary>
+        /// 获取集合
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IQueryable<TEntity>> GetAllAsync()
+        {
+            return await GetAllIncludingAsync();
+        }
+
+        /// <summary>
+        /// 获取集合并排序
+        /// </summary>
+        /// <param name="propertySelectors"></param>
+        /// <returns></returns>
         public IQueryable<TEntity> GetAllIncluding(params Expression<Func<TEntity, object>>[] propertySelectors)
         {
-            if (propertySelectors.IsNullOrEmpty())
+            var query = Table.AsQueryable();
+
+            if (!propertySelectors.IsNullOrEmpty())
             {
-                return GetAll();
+                foreach (var propertySelector in propertySelectors)
+                {
+                    query = query.Include(propertySelector);
+                }
             }
-
-            var query = GetAll();
-
-            foreach (var propertySelector in propertySelectors)
-            {
-                query = query.Include(propertySelector);
-            }
-
             return query;
+        }
+
+        /// <summary>
+        /// 获取集合并排序
+        /// </summary>
+        /// <param name="propertySelectors"></param>
+        /// <returns></returns>
+        public Task<IQueryable<TEntity>> GetAllIncludingAsync(params Expression<Func<TEntity, object>>[] propertySelectors)
+        {
+            var query = Table.AsQueryable();
+
+            if (!propertySelectors.IsNullOrEmpty())
+            {
+                foreach (var propertySelector in propertySelectors)
+                {
+                    query = query.Include(propertySelector);
+                }
+            }
+
+            return Task.FromResult(query);
         }
 
         /// <summary>
@@ -61,6 +96,15 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         public List<TEntity> GetAllList()
         {
             return GetAll().ToList();
+        }
+
+        /// <summary>
+        /// 获取实体集合
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<TEntity>> GetAllListAsync()
+        {
+            return await GetAll().ToListAsync();
         }
 
         /// <summary>
@@ -74,13 +118,34 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         }
 
         /// <summary>
+        /// 根据lambda表达式条件获取实体集合
+        /// </summary>
+        /// <param name="predicate">lambda表达式条件</param>
+        /// <returns></returns>
+        public async Task<List<TEntity>> GetAllListAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            return await GetAll().Where(predicate).ToListAsync();
+        }
+
+        /// <summary>
         /// 根据主键获取实体
         /// </summary>
         /// <param name="id">实体主键</param>
         /// <returns></returns>
-        public TEntity Get(TPrimaryKey id)
+        public TEntity FirstOrDefault(TPrimaryKey id)
         {
             return GetAll().FirstOrDefault(CreateEqualityExpressionForId(id));
+        }
+
+        /// <summary>
+        /// 根据主键获取实体
+        /// </summary>
+        /// <param name="id">实体主键</param>
+        /// <returns></returns>
+        public async Task<TEntity> FirstOrDefaultAsync(TPrimaryKey id)
+        {
+            return await GetAll().FirstOrDefaultAsync(CreateEqualityExpressionForId(id));
+
         }
 
         /// <summary>
@@ -93,33 +158,71 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
             return GetAll().FirstOrDefault(predicate);
         }
 
+        /// <summary>
+        /// 根据lambda表达式条件获取单个实体
+        /// </summary>
+        /// <param name="predicate">lambda表达式条件</param>
+        /// <returns></returns>
+        public async Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            return await GetAll().FirstOrDefaultAsync(predicate);
+        }
 
         /// <summary>
         /// 分页查询
         /// </summary>
-        /// <param name="startPage">页码</param>
-        /// <param name="pageSize">单页数据数</param>
-        /// <param name="rowCount">行数</param>
-        /// <param name="where">条件</param>
-        /// <param name="order">排序</param>
+        /// <param name="whereExpression"></param>
+        /// <param name="intPageIndex"></param>
+        /// <param name="intPageSize"></param>
+        /// <param name="order"></param>
+        /// <param name="orderType"></param>
         /// <returns></returns>
-        public IQueryable<TEntity> FindPageList(int startPage, int pageSize, out int rowCount, Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, object>> order = null, string orderType = "asc")
+        public PageModel<TEntity> GetPageList(int intPageIndex, int intPageSize, Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, object>> order,  string orderType = "asc")
         {
-            var result = Table.Where(where);
-
+            var result = GetAll().Where(where);
+            int totalCount = result.Count();
             if (order != null)
             {
-                if (orderType == "desc")
-                    result = result.OrderByDescending(order);
-                else
+                if (orderType == "asc")
                     result = result.OrderBy(order);
+                else
+                    result = result.OrderByDescending(order);
             }
             else
             {
-                result = result.OrderBy(m => m.Id);
+                result = result.OrderByDescending(m => m.Id);
             }
-            rowCount = result.Count();
-            return result.Skip((startPage - 1) * pageSize).Take(pageSize);
+            int pageCount = (int)Math.Ceiling((double)(totalCount / intPageSize));
+            var _list = result.Skip((intPageIndex - 1) * intPageSize).Take(intPageSize).ToList();
+
+            return new PageModel<TEntity>() { PageCount = pageCount, TotalCount = totalCount, TEntityList = _list, PageIndex = intPageIndex, PageSize = intPageSize };
+        }
+
+        /// <summary>
+        /// 分页查询
+        /// </summary>
+        /// <param name="whereExpression"></param>
+        /// <param name="intPageIndex"></param>
+        /// <param name="intPageSize"></param>
+        /// <param name="order"></param>
+        /// <param name="orderType"></param>
+        /// <returns></returns>
+        public async Task<PageModel<TEntity>> GetPageListAsync(int intPageIndex, int intPageSize, Expression<Func<TEntity, bool>> whereExpression,  Expression<Func<TEntity, object>> order, string orderType = "asc")
+        {
+            var result = GetAll().Where(whereExpression);
+            int totalCount = result.Count();
+            if (order != null)
+            {
+                if (orderType == "asc")
+                    result = result.OrderBy(order);
+                else
+                    result = result.OrderByDescending(order);
+            }
+
+            int pageCount = (int)Math.Ceiling((double)(totalCount / intPageSize));
+            var _list = await result.Skip((intPageIndex - 1) * intPageSize).Take(intPageSize).ToListAsync();
+
+            return new PageModel<TEntity>() { PageCount = pageCount, TotalCount = totalCount, TEntityList = _list, PageIndex = intPageIndex, PageSize = intPageSize };
         }
 
         /// <summary>
@@ -132,20 +235,22 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// <param name="order"></param>
         /// <param name="orderType"></param>
         /// <returns></returns>
-        public IQueryable<TEntity> FindPageListFromSql(int pageIndex, int pageSize, out int totalRecord, string sql, Expression<Func<TEntity, object>> order, string orderType = "asc")
+        public PageModel<TEntity> FindPageListFromSql(int intPageIndex, int intPageSize, string sql, Expression<Func<TEntity, object>> order, string orderType = "asc")
         {
-            var _list = Table.FromSql(sql);
-            totalRecord = _list.Count();
+            var result = GetFromSql(sql);
+
+            var totalCount = result.Count();
             if (order != null)
             {
                 if (orderType == "asc")
-                    _list = _list.OrderBy(order);
+                    result = result.OrderBy(order);
                 else
-                    _list = _list.OrderByDescending(order);
+                    result = result.OrderByDescending(order);
             }
+            int pageCount = (int)Math.Ceiling((double)(totalCount / intPageSize));
+            var _list =  result.Skip((intPageIndex - 1) * intPageSize).Take(intPageSize).ToList();
 
-            _list = _list.Skip((pageIndex - 1) * pageSize).Take(pageSize);
-            return _list;
+            return new PageModel<TEntity>() { PageCount = pageCount, TotalCount = totalCount, PageIndex = intPageIndex, PageSize = intPageSize, TEntityList = _list };
         }
 
         /// <summary>
@@ -155,7 +260,7 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// <returns></returns>
         public IQueryable<TEntity> GetFromSql(string sql)
         {
-            var _list = Table.FromSql(sql);
+            var _list = GetAll().FromSql(sql);
 
             return _list;
         }
@@ -169,12 +274,20 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// <param name="entity">实体</param>
         /// <param name="autoSave">是否立即执行保存</param>
         /// <returns></returns>
-        public TEntity Insert(TEntity entity, bool autoSave = true)
+        public TEntity Insert(TEntity entity)
         {
-            Table.Add(entity);
-            if (autoSave)
-                Save();
-            return entity;
+            return Table.Add(entity).Entity;
+        }
+
+        /// <summary>
+        /// 新增实体
+        /// </summary>
+        /// <param name="entity">实体</param>
+        /// <param name="autoSave">是否立即执行保存</param>
+        /// <returns></returns>
+        public Task<TEntity> InsertAsync(TEntity entity)
+        {
+            return Task.FromResult(Insert(entity));
         }
 
         /// <summary>
@@ -188,36 +301,61 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         }
 
         /// <summary>
+        /// 批量新增
+        /// </summary>
+        /// <param name="entitys"></param>
+        public async Task BatchInsertAsync(List<TEntity> entitys)
+        {
+            await Table.AddRangeAsync(entitys);
+            await SaveAsync();
+        }
+
+        /// <summary>
         /// 更新实体
         /// </summary>
         /// <param name="entity">实体</param>
         /// <param name="autoSave">是否立即执行保存</param>
-        public TEntity Update(TEntity entity, bool autoSave = true)
+        public TEntity Update(TEntity entity)
         {
-            AttachIfNot(entity);
+            // 发现并没什么用先，先注释
+            //AttachIfNot(entity);
             _dbContext.Entry(entity).State = EntityState.Modified;
-            if (autoSave)
-                Save();
             return entity;
         }
 
-        //private void EntityToEntity<T>(T pTargetObjSrc, T pTargetObjDest)
-        //{
-        //    foreach (var mItem in typeof(T).GetProperties())
-        //    {
-        //        mItem.SetValue(pTargetObjDest, mItem.GetValue(pTargetObjSrc, new object[] { }), null);
-        //    }
-        //}
+        /// <summary>
+        /// 更新实体
+        /// </summary>
+        /// <param name="entity">实体</param>
+        /// <param name="autoSave">是否立即执行保存</param>
+        public Task<TEntity> UpdateAsync(TEntity entity)
+        {
+            Update(entity);
+            return Task.FromResult(entity);
+        }
+
         /// <summary>
         /// 新增或更新实体
         /// </summary>
         /// <param name="entity">实体</param>
         /// <param name="autoSave">是否立即执行保存</param>
-        public TEntity InsertOrUpdate(TEntity entity, bool autoSave = true)
+        public TEntity InsertOrUpdate(TEntity entity)
         {
-            if (Get(entity.Id) != null)
-                return Update(entity, autoSave);
-            return Insert(entity, autoSave);
+            return entity.IsTransient()
+                ? Insert(entity)
+                : Update(entity);
+        }
+
+        /// <summary>
+        /// 新增或更新实体
+        /// </summary>
+        /// <param name="entity">实体</param>
+        /// <param name="autoSave">是否立即执行保存</param>
+        public async Task<TEntity> InsertOrUpdateAsync(TEntity entity)
+        {
+            return entity.IsTransient()
+                ? await InsertAsync(entity)
+                : await UpdateAsync(entity);
         }
 
         /// <summary>
@@ -238,39 +376,58 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// <summary>
         /// 删除实体
         /// </summary>
-        /// <param name="entity">要删除的实体</param>
+        /// <param name="id">实体主键</param>
         /// <param name="autoSave">是否立即执行保存</param>
-        public void Delete(TEntity entity, bool autoSave = true)
+        public void Delete(TPrimaryKey id)
         {
-            AttachIfNot(entity);
-            Table.Remove(entity);
-            if (autoSave)
-                Save();
-        }
+            var entity = Table.Local.FirstOrDefault(ent => EqualityComparer<TPrimaryKey>.Default.Equals(ent.Id, id));
+            if (entity == null)
+            {
+                entity = FirstOrDefault(id);
+                if (entity == null)
+                {
+                    return;
+                }
+            }
 
+            Delete(entity);
+        }
+        public Task DeleteAsync(TPrimaryKey id)
+        {
+            Delete(id);
+            return Task.FromResult(0);
+        }
         /// <summary>
         /// 删除实体
         /// </summary>
-        /// <param name="id">实体主键</param>
+        /// <param name="entity">要删除的实体</param>
         /// <param name="autoSave">是否立即执行保存</param>
-        public void Delete(TPrimaryKey id, bool autoSave = true)
+        public void Delete(TEntity entity)
         {
-            Table.Remove(Get(id));
-            if (autoSave)
-                Save();
+            //AttachIfNot(entity);
+            _dbContext.Entry(entity).State = EntityState.Deleted;
         }
 
+        public Task DeleteAsync(TEntity entity)
+        {
+            Delete(entity);
+            return Task.FromResult(0);
+        }
         /// <summary>
         /// 根据条件删除实体
         /// </summary>
         /// <param name="where">lambda表达式</param>
         /// <param name="autoSave">是否自动保存</param>
-        public void Delete(Expression<Func<TEntity, bool>> predicate, bool autoSave = true)
+        public void Delete(Expression<Func<TEntity, bool>> predicate)
         {
 
             DeleteRange(GetAll().Where(predicate));
-            if (autoSave)
-                Save();
+        }
+
+        public Task DeleteAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            Delete(predicate);
+            return Task.FromResult(0);
         }
 
         /// <summary>
@@ -281,7 +438,6 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         {
             Table.RemoveRange(entities);
         }
-
 
         #endregion
 
@@ -294,6 +450,11 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
             _dbContext.SaveChanges();
         }
 
+        public async Task SaveAsync()
+        {
+           await _dbContext.SaveChangesAsync();
+        }
+
         /// <summary>
         /// 根据主键构建判断表达式
         /// </summary>
@@ -301,16 +462,28 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// <returns></returns>
         protected static Expression<Func<TEntity, bool>> CreateEqualityExpressionForId(TPrimaryKey id)
         {
-            //参数
+            ///简单方式
+            ////参数
+            //var lambdaParam = Expression.Parameter(typeof(TEntity));
+            ////比较==
+            //var lambdaBody = Expression.Equal(
+            //    Expression.PropertyOrField(lambdaParam, "Id"),
+            //    Expression.Constant(id, typeof(TPrimaryKey))
+            //    );
+
             var lambdaParam = Expression.Parameter(typeof(TEntity));
-            //比较==
-            var lambdaBody = Expression.Equal(
-                Expression.PropertyOrField(lambdaParam, "Id"),
-                Expression.Constant(id, typeof(TPrimaryKey))
-                );
+
+            var leftExpression = Expression.PropertyOrField(lambdaParam, "Id");
+
+            var idValue = Convert.ChangeType(id, typeof(TPrimaryKey));
+
+            Expression<Func<object>> closure = () => idValue;
+            var rightExpression = Expression.Convert(closure.Body, leftExpression.Type);
+
+            var lambdaBody = Expression.Equal(leftExpression, rightExpression);
+
             //生成表达式
             return Expression.Lambda<Func<TEntity, bool>>(lambdaBody, lambdaParam);
         }
-
     }
 }

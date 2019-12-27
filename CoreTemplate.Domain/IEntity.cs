@@ -11,7 +11,7 @@ namespace CoreTemplate.Domain
     {
         TPrimaryKey Id { get; set; }
 
-        //bool IsTransient();
+        bool IsTransient();
     }
 
     public interface IEntity : IEntity<int>

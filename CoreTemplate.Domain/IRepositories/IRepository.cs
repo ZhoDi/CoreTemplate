@@ -10,13 +10,26 @@ namespace CoreTemplate.Domain.IRepositories
 
     public interface IRepository<TEntity, TPrimaryKey> where TEntity : class, IEntity<TPrimaryKey>
     {
-
+        #region Select/Get/Query
         /// <summary>
         /// 获取全部
         /// </summary>
         IQueryable<TEntity> GetAll();
+        Task<IQueryable<TEntity>> GetAllAsync();
 
+        /// <summary>
+        /// 获取并排序
+        /// </summary>
+        /// <param name="propertySelectors"></param>
+        /// <returns></returns>
         IQueryable<TEntity> GetAllIncluding(params Expression<Func<TEntity, object>>[] propertySelectors);
+
+        /// <summary>
+        /// 获取并排序
+        /// </summary>
+        /// <param name="propertySelectors"></param>
+        /// <returns></returns>
+        Task<IQueryable<TEntity>> GetAllIncludingAsync(params Expression<Func<TEntity, object>>[] propertySelectors);
 
         /// <summary>
         /// 获取实体集合
@@ -25,18 +38,38 @@ namespace CoreTemplate.Domain.IRepositories
         List<TEntity> GetAllList();
 
         /// <summary>
-        /// 根据lambda表达式条件获取实体集合
+        /// 根据lambda表达式条件获取实体集合<paramref name="predicate"/>.
         /// </summary>
         /// <param name="predicate">lambda表达式条件</param>
         /// <returns></returns>
         List<TEntity> GetAllList(Expression<Func<TEntity, bool>> predicate);
 
         /// <summary>
+        /// 获取实体集合
+        /// </summary>
+        /// <returns>List of all entities</returns>
+        Task<List<TEntity>> GetAllListAsync();
+
+        /// <summary>
+        /// 根据lambda表达式条件获取实体集合 <paramref name="predicate"/>.
+        /// </summary>
+        /// <param name="predicate">lambda表达式条件</param>
+        /// <returns>List of all entities</returns>
+        Task<List<TEntity>> GetAllListAsync(Expression<Func<TEntity, bool>> predicate);
+
+        /// <summary>
         /// 根据主键获取实体
         /// </summary>
         /// <param name="id">实体主键</param>
         /// <returns></returns>
-        TEntity Get(TPrimaryKey id);
+        TEntity FirstOrDefault(TPrimaryKey id);
+
+        /// <summary>
+        /// 根据主键获取实体
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<TEntity> FirstOrDefaultAsync(TPrimaryKey id);
 
         /// <summary>
         /// 根据lambda表达式条件获取单个实体
@@ -46,15 +79,23 @@ namespace CoreTemplate.Domain.IRepositories
         TEntity FirstOrDefault(Expression<Func<TEntity, bool>> predicate);
 
         /// <summary>
-        /// 分页获取数据
+        /// 根据lambda表达式条件获取单个实体
         /// </summary>
-        /// <param name="startPage">起始页</param>
-        /// <param name="pageSize">页面条目</param>
-        /// <param name="rowCount">数据总数</param>
-        /// <param name="where">查询条件</param>
-        /// <param name="order">排序</param>
+        /// <param name="predicate"></param>
         /// <returns></returns>
-        IQueryable<TEntity> FindPageList(int startPage, int pageSize, out int rowCount, Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, object>> order, string orderType = "asc");
+        Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate);
+
+        /// <summary>
+        /// 分页查询
+        /// </summary>
+        /// <returns></returns>
+        PageModel<TEntity> GetPageList(int intPageIndex, int intPageSize, Expression<Func<TEntity, bool>> whereExpression, Expression<Func<TEntity, object>> order,   string orderType = "asc");
+
+        /// <summary>
+        /// 分页查询
+        /// </summary>
+        /// <returns></returns>
+        Task<PageModel<TEntity>> GetPageListAsync(int intPageIndex, int intPageSize, Expression<Func<TEntity, bool>> whereExpression, Expression<Func<TEntity, object>> order, string orderType = "asc");
 
         /// <summary>
         /// sql分页获取数据
@@ -66,7 +107,7 @@ namespace CoreTemplate.Domain.IRepositories
         /// <param name="order"></param>
         /// <param name="orderType"></param>
         /// <returns></returns>
-        IQueryable<TEntity> FindPageListFromSql(int pageIndex, int pageSize, out int totalRecord, string sql, Expression<Func<TEntity, object>> order, string orderType = "asc");
+        PageModel<TEntity> FindPageListFromSql(int pageIndex, int pageSize, string sql, Expression<Func<TEntity, object>> order, string orderType = "asc");
 
         /// <summary>
         /// sql语句
@@ -75,7 +116,9 @@ namespace CoreTemplate.Domain.IRepositories
         /// <returns></returns>
         IQueryable<TEntity> GetFromSql(string sql);
 
-        void AttachIfNot(TEntity entity);
+        #endregion
+
+        #region Insert/Update
 
         /// <summary>
         /// 新增实体
@@ -83,16 +126,26 @@ namespace CoreTemplate.Domain.IRepositories
         /// <param name="entity">实体</param>
         /// <param name="autoSave">是否立即执行保存</param>
         /// <returns></returns>
-        TEntity Insert(TEntity entity, bool autoSave = true);
+        TEntity Insert(TEntity entity);
+
+        /// <summary>
+        /// 新增实体
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="autoSave"></param>
+        /// <returns></returns>
+        Task<TEntity> InsertAsync(TEntity entity);
 
         void BatchInsert(List<TEntity> entitys);
+        Task BatchInsertAsync(List<TEntity> entitys);
 
         /// <summary>
         /// 更新实体
         /// </summary>
         /// <param name="entity">实体</param>
         /// <param name="autoSave">是否立即执行保存</param>
-        TEntity Update(TEntity entity, bool autoSave = true);
+        TEntity Update(TEntity entity);
+        Task<TEntity> UpdateAsync(TEntity entity);
 
 
         /// <summary>
@@ -100,28 +153,43 @@ namespace CoreTemplate.Domain.IRepositories
         /// </summary>
         /// <param name="entity">实体</param>
         /// <param name="autoSave">是否立即执行保存</param>
-        TEntity InsertOrUpdate(TEntity entity, bool autoSave = true);
+        TEntity InsertOrUpdate(TEntity entity);
 
+        /// <summary>
+        /// 新增或更新实体
+        /// </summary>
+        /// <param name="entity">实体</param>
+        /// <param name="autoSave">是否立即执行保存</param>
+        Task<TEntity> InsertOrUpdateAsync(TEntity entity);
+
+        void AttachIfNot(TEntity entity);
+
+        #endregion
+
+        #region Delete
         /// <summary>
         /// 删除实体
         /// </summary>
         /// <param name="entity">要删除的实体</param>
         /// <param name="autoSave">是否立即执行保存</param>
-        void Delete(TEntity entity, bool autoSave = true);
+        void Delete(TEntity entity);
+        Task DeleteAsync(TEntity entity);
 
         /// <summary>
         /// 删除实体
         /// </summary>
         /// <param name="id">实体主键</param>
         /// <param name="autoSave">是否立即执行保存</param>
-        void Delete(TPrimaryKey id, bool autoSave = true);
+        void Delete(TPrimaryKey id);
+        Task DeleteAsync(TPrimaryKey id);
 
         /// <summary>
         /// 根据条件删除实体
         /// </summary>
         /// <param name="where">lambda表达式</param>
         /// <param name="autoSave">是否自动保存</param>
-        void Delete(Expression<Func<TEntity, bool>> where, bool autoSave = true);
+        void Delete(Expression<Func<TEntity, bool>> where);
+        Task DeleteAsync(Expression<Func<TEntity, bool>> predicate);
 
         /// <summary>
         /// 批量删除
@@ -129,6 +197,8 @@ namespace CoreTemplate.Domain.IRepositories
         /// <param name="entities"></param>
         void DeleteRange(IQueryable<TEntity> entities);
 
+        #endregion
         void Save();
+        Task SaveAsync();
     }
 }

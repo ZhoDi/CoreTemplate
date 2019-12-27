@@ -71,7 +71,7 @@ namespace CoreTemplate.Controllers
         [HttpGet("GetAllUser")]
         public IActionResult GetAllUser()
         {
-            var result = _UserService.GetAll();
+            var result = _UserService.GetAllList();
             return Ok(new { res = result });
         }
     }
