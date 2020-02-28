@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using AutoMapper;
+using CoreTemplate.AOP;
 using CoreTemplate.Config;
 using CoreTemplate.Domain.APIModel.User;
 //using AutoMapper;
@@ -91,7 +92,7 @@ namespace CoreTemplate.Startup
             #endregion
 
             #region 授权
-            AuthConfigurer.Configure(services, Configuration);
+            //AuthConfigurer.Configure(services, Configuration);
             #endregion
 
             #region 跨域
@@ -117,7 +118,7 @@ namespace CoreTemplate.Startup
             services.AddDbContext<TempDbContext>(options => options.UseMySql(connection));
             services.BuildServiceProvider().GetService<TempDbContext>().Database.Migrate();
 
-            //注册仓储泛型
+            //自带DI容器 注册仓储泛型
             //services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
             //services.AddScoped<IUserServices, UserServices>();
             #endregion
@@ -135,11 +136,11 @@ namespace CoreTemplate.Startup
                 app.UseSwaggerUI(options =>
                 {
                     options.SwaggerEndpoint("/swagger/v1/swagger.json", "CoreTemplate API v1");
-
+                    var basePath = Microsoft.DotNet.PlatformAbstractions.ApplicationEnvironment.ApplicationBasePath;
                     //自定义UI
                     options.IndexStream = () =>
                     {
-                        return new FileStream("wwwroot/swagger/ui/index.html", FileMode.Open);
+                        return new FileStream(basePath + "/wwwroot/swagger/ui/index.html", FileMode.Open);
                     };
                 });
 
@@ -184,7 +185,9 @@ namespace CoreTemplate.Startup
             tokenAuthConfig.Expiration = TimeSpan.FromDays(1);
 
             //注册Token配置信息
-            builder.RegisterInstance(tokenAuthConfig);
+            builder.RegisterInstance(tokenAuthConfig).SingleInstance();
+
+            builder.RegisterType<LogAOP>();
 
             //新模块组件注册
             builder.RegisterModule<AutofacModuleRegister>();

@@ -1,5 +1,7 @@
 ﻿using Autofac;
+using Autofac.Extras.DynamicProxy;
 using AutoMapper;
+using CoreTemplate.AOP;
 using CoreTemplate.Application.Application;
 using CoreTemplate.Domain.APIModel.User;
 using CoreTemplate.Domain.IRepositories;
@@ -19,16 +21,21 @@ namespace CoreTemplate.Startup
         protected override void Load(ContainerBuilder builder)
         {
             //注册Application.Services中的对象,Services中的类要以Services结尾，否则注册失败
-
-            builder.RegisterAssemblyTypes(Assembly.Load("CoreTemplate.Application")).Where(a => a.Name.EndsWith("Services")).AsImplementedInterfaces();
+            var dataAccess = Assembly.Load("CoreTemplate.Application");
+            builder.RegisterAssemblyTypes(dataAccess)
+                .Where(a => a.Name.EndsWith("Services"))
+                .AsImplementedInterfaces()
+                .InstancePerLifetimeScope()
+                .EnableInterfaceInterceptors()//引用Autofac.Extras.DynamicProxy;
+                .InterceptedBy(typeof(LogAOP));//拦截器
 
             //注册仓储泛型
             builder.RegisterGeneric(typeof(Repository<,>)).As(typeof(IRepository<,>)).InstancePerLifetimeScope();
 
             //注册AutoMapper
-            builder.RegisterType<Mapper>().As<IMapper>().InstancePerDependency();
+            builder.RegisterType<Mapper>().As<IMapper>().SingleInstance();
 
-            builder.RegisterType<AutoMapperObjectMapper>().As<Application.Application.IObjectMapper>().InstancePerDependency();
+            //builder.RegisterType<AutoMapperObjectMapper>().As<Application.Application.IObjectMapper>().InstancePerDependency();
 
 
             //builder.Register<IMapper>(ctx => new Mapper(ctx.Resolve<IConfigurationProvider>(), ctx.Resolve)).InstancePerDependency();
