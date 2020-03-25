@@ -4,6 +4,16 @@
         <name>CoreTemplate</name>
     </assembly>
     <members>
+        <member name="F:CoreTemplate.AOP.Memory.MemoryCaching._cache">
+            <summary>
+            实例化缓存接口ICaching
+            </summary>
+        </member>
+        <member name="F:CoreTemplate.AOP.Memory.TemplateCacheAOP._cache">
+            <summary>
+            注入构造接口
+            </summary>
+        </member>
         <member name="M:CoreTemplate.AuthHelp.JwtHelper.IssueJwt(CoreTemplate.AuthHelp.TokenModel)">
             <summary>
             根据传进来的TokenModel生成taokn字符串
@@ -79,6 +89,13 @@
             DELETE api/values/5
             </summary>
             <param name="id"></param>
+        </member>
+        <member name="M:CoreTemplate.Extension.Appsettings.app(System.String[])">
+            <summary>
+            封装要操作的字符
+            </summary>
+            <param name="sections"></param>
+            <returns></returns>
         </member>
     </members>
 </doc>

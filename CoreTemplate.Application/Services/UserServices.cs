@@ -10,13 +10,13 @@ using System.Text;
 
 namespace CoreTemplate.Application.Services
 {
-    public class UserServices : BaseServices<User,UserDto, int>, IUserServices
+    public class UserServices : BaseServices<User, UserDto, int>, IUserServices
     {
         private readonly IRepository<User, int> _UserRepository;
         private readonly IRepository<UserRole, int> _UserRoleRepository;
         private readonly IRepository<Role, int> _RoleRepository;
 
-        public UserServices(IRepository<User, int> UserRepository, IRepository<UserRole, int> UserRoleRepository, IRepository<Role, int> RoleRepository,IMapper Mapper):base(UserRepository, Mapper)
+        public UserServices(IRepository<User, int> UserRepository, IRepository<UserRole, int> UserRoleRepository, IRepository<Role, int> RoleRepository, IMapper Mapper) : base(UserRepository, Mapper)
         {
             _UserRepository = UserRepository;
             _UserRoleRepository = UserRoleRepository;
@@ -43,9 +43,10 @@ namespace CoreTemplate.Application.Services
                 var role = _RoleRepository.FirstOrDefault(p => p.Id == item.RoleId);
                 if (role != null)
                 {
-                    strB.Append("," + role.Name);
+                    strB.Append(role.Name + ',');
                 }
             }
+            //结尾有","在解析时注意
             return strB.ToString();
         }
 

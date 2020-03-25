@@ -6,6 +6,7 @@ using CoreTemplate.Application.Dto.User;
 using CoreTemplate.Application.IServices;
 using CoreTemplate.AuthHelp;
 using CoreTemplate.Domain.APIModel.User;
+using CoreTemplate.Extension;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,12 +17,10 @@ namespace CoreTemplate.Controllers
     public class LoginController : ControllerBase
     {
         private readonly IUserServices _UserService;
-        private readonly TokenAuthConfiguration _TokenAuthConfiguration;
 
-        public LoginController(IUserServices UserService,TokenAuthConfiguration TokenAuthConfiguration)
+        public LoginController(IUserServices UserService)
         {
             _UserService = UserService;
-            _TokenAuthConfiguration = TokenAuthConfiguration;
         }
 
         [HttpPost("Authenticate")]
@@ -47,7 +46,6 @@ namespace CoreTemplate.Controllers
             var res = new AuthenticateResultModel
             {
                 AccessToken = jwtStr,
-                ExpireInSeconds = (int)_TokenAuthConfiguration.Expiration.TotalSeconds,
                 UserId = userInfo.Id
             };
 

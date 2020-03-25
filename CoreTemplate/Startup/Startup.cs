@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
@@ -92,7 +93,7 @@ namespace CoreTemplate.Startup
             #endregion
 
             #region 授权
-            //AuthConfigurer.Configure(services, Configuration);
+            AuthConfigurer.Configure(services, Configuration);
             #endregion
 
             #region 跨域
@@ -163,9 +164,6 @@ namespace CoreTemplate.Startup
                     name: "spa-fallback",
                     defaults: new { controller = "Home", action = "Index" });
             });
-
-            //初始化数据
-            SeedData.SeedDb(Container);
         }
 
         public IServiceProvider RegisterAutofac(IServiceCollection services)
@@ -174,25 +172,14 @@ namespace CoreTemplate.Startup
             var builder = new ContainerBuilder();
             //将Services中的服务填充到Autofac中
             builder.Populate(services);
-            ////注册示例
-            //builder.RegisterType<UserServices>().As<IUserServices>();
-
-            var tokenAuthConfig = new TokenAuthConfiguration();
-            tokenAuthConfig.SecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["Authentication:JwtBearer:SecurityKey"]));
-            tokenAuthConfig.Issuer = Configuration["Authentication:JwtBearer:Issuer"];
-            tokenAuthConfig.Audience = Configuration["Authentication:JwtBearer:Audience"];
-            tokenAuthConfig.SigningCredentials = new SigningCredentials(tokenAuthConfig.SecurityKey, SecurityAlgorithms.HmacSha256);
-            tokenAuthConfig.Expiration = TimeSpan.FromDays(1);
-
-            //注册Token配置信息
-            builder.RegisterInstance(tokenAuthConfig).SingleInstance();
-
-            builder.RegisterType<LogAOP>();
-
             //新模块组件注册
             builder.RegisterModule<AutofacModuleRegister>();
             //创建容器
             Container = builder.Build();
+
+            //初始化数据
+            SeedData.SeedDb(Container);
+
             //第三方IOC接管 core内置DI容器
             return new AutofacServiceProvider(Container);
         }

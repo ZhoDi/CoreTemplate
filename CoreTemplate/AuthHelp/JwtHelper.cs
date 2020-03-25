@@ -49,7 +49,7 @@ namespace CoreTemplate.AuthHelp
                 new Claim(JwtRegisteredClaimNames.Aud,config["Authentication:JwtBearer:Audience"])
             };
 
-            //一个用户多个角色
+            //一个用户多个角色,StringSplitOptions.RemoveEmptyEntries用以去除最后一个空数据(示例数据  Admin,User,  最后有,)
             claims.AddRange(tokenModel.Role.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => new Claim(ClaimTypes.Role, s)));
 
             //秘钥
