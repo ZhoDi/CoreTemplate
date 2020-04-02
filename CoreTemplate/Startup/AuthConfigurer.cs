@@ -24,7 +24,7 @@ namespace CoreTemplate.Startup
                 {
                     options.AddPolicy("User", policy => policy.RequireRole("User").Build());
                     options.AddPolicy("Admin", policy => policy.RequireRole("Admin").Build());
-                    options.AddPolicy("AdminOrUser", policy => policy.RequireRole("Admin","User"));
+                    options.AddPolicy("AdminOrUser", policy => policy.RequireRole("Admin","User").Build());
                 }).AddAuthentication(options => {
                     options.DefaultAuthenticateScheme = "JwtBearer";
                     options.DefaultChallengeScheme = "JwtBearer";

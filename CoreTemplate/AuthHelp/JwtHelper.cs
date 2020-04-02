@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using CoreTemplate.Application.Helper;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -43,7 +44,7 @@ namespace CoreTemplate.AuthHelp
                 new Claim(JwtRegisteredClaimNames.Exp,new DateTimeOffset(time).AddDays(1).ToUnixTimeSeconds().ToString(),ClaimValueTypes.Integer64),
 
                 //jwt签发者
-                new Claim(JwtRegisteredClaimNames.Iss,config["Authentication:JwtBearer:Issuer"]),
+                new Claim(JwtRegisteredClaimNames.Iss,Appsettings.app("Authentication:JwtBearer:Issuer")),
 
                 //jwt接收者
                 new Claim(JwtRegisteredClaimNames.Aud,config["Authentication:JwtBearer:Audience"])

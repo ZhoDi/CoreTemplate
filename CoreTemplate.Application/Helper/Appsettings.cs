@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CoreTemplate.Extension
+namespace CoreTemplate.Application.Helper
 {
     public class Appsettings
     {
@@ -14,17 +14,12 @@ namespace CoreTemplate.Extension
 
         static Appsettings()
         {
-            string Path = "appsettings.json";
-            {
-                //Path = $"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json";
-            }
-
             Configuration = new ConfigurationBuilder()
                //将配置文件的数据加载到内存中
                .AddInMemoryCollection()
                //指定配置文件所在的目录
                .SetBasePath(Directory.GetCurrentDirectory())
-               .AddJsonFile(Path, optional : false, reloadOnChange: true)//这样的话，可以直接读目录里的json文件，而不是 bin 文件夹下的，所以不用修改复制属性
+               .AddJsonFile("appsettings.json", optional : false, reloadOnChange: true)//这样的话，可以直接读目录里的json文件，而不是 bin 文件夹下的，所以不用修改复制属性
                .Build();
 
 

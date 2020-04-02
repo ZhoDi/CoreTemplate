@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CoreTemplate.Application.Dto.User;
+using CoreTemplate.Application.Helper;
 using CoreTemplate.Application.IServices;
 using CoreTemplate.AuthHelp;
 using CoreTemplate.Domain.APIModel.User;
-using CoreTemplate.Extension;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -46,6 +46,7 @@ namespace CoreTemplate.Controllers
             var res = new AuthenticateResultModel
             {
                 AccessToken = jwtStr,
+                ExpireInSeconds = (int)TimeSpan.FromDays(1).TotalSeconds,
                 UserId = userInfo.Id
             };
 
@@ -69,30 +70,9 @@ namespace CoreTemplate.Controllers
         [HttpGet("GetAllUser")]
         public IActionResult GetAllUser()
         {
+            var connection = Appsettings.app("", "");
             var result = _UserService.GetAllList();
             return Ok(new { res = result });
-        }
-
-        [HttpGet("getcasecount")]
-        public IActionResult getcasecount()
-        {
-            return Ok(new 
-            { 
-                code=0,
-                message="OK",
-                data =new
-                {
-                    policeCase=50,
-                    hotLine = 333,
-                    petitionLetter = 30,
-                    letterBox = 10,
-                    neuronalPerception = 5893,
-                    workFound = 26,
-                    governmentHandOver = 6,
-                    networkDiscovery = 0,
-                    prisonDig = 9
-                }
-            });
         }
     }
 }

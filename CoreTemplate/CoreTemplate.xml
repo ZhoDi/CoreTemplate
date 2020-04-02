@@ -90,12 +90,5 @@
             </summary>
             <param name="id"></param>
         </member>
-        <member name="M:CoreTemplate.Extension.Appsettings.app(System.String[])">
-            <summary>
-            封装要操作的字符
-            </summary>
-            <param name="sections"></param>
-            <returns></returns>
-        </member>
     </members>
 </doc>

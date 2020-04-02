@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CoreTemplate.Application.Dto.User;
 using CoreTemplate.Application.IServices;
+using CoreTemplate.Application.TemplateAttribute;
 using CoreTemplate.Domain.Entities;
 using CoreTemplate.Domain.IRepositories;
 using Newtonsoft.Json;
@@ -23,6 +24,7 @@ namespace CoreTemplate.Application.Services
             _RoleRepository = RoleRepository;
         }
 
+        [Caching]
         public User GetUserInfoByName(string name)
         {
             var user = _UserRepository.FirstOrDefault(p => p.Name == name);
