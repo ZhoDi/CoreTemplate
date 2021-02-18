@@ -6,14 +6,14 @@ using System.Text;
 
 namespace CoreTemplate.Application.Application.Redis
 {
-    public class RedisCacheManager
+    public class RedisCacheManager:IRedisCacheManager
     {
         private readonly string redisConnenctionString;
         public volatile ConnectionMultiplexer redisConnection;
-        private readonly object redisConnectionLock = new object();
+        private static readonly object redisConnectionLock = new object();
         public RedisCacheManager()
         {
-            string redisConfiguration = Appsettings.app("RedisCaching", "ConnectionString");//获取连接字符串
+            string redisConfiguration = Appsettings.app("AOP", "RedisCatchAOP", "ConnectionString");//获取连接字符串
 
             if (string.IsNullOrWhiteSpace(redisConfiguration))
             {
@@ -31,28 +31,28 @@ namespace CoreTemplate.Application.Application.Redis
         private ConnectionMultiplexer GetRedisConnection()
         {
             //如果已经连接实例，直接返回
-            if (this.redisConnection != null && this.redisConnection.IsConnected)
+            if (this.redisConnection == null || !this.redisConnection.IsConnected)
             {
-                return this.redisConnection;
-            }
-            //加锁，防止异步编程中，出现单例无效的问题
-            lock (redisConnectionLock)
-            {
-                if (this.redisConnection != null)
+                //加锁，防止异步编程中，出现单例无效的问题
+                lock (redisConnectionLock)
                 {
-                    //释放redis连接
-                    this.redisConnection.Dispose();
-                }
-                try
-                {
-                    this.redisConnection = ConnectionMultiplexer.Connect(redisConnenctionString);
-                }
-                catch (Exception)
-                {
+                    if (this.redisConnection != null)
+                    {
+                        //释放redis连接
+                        this.redisConnection.Dispose();
+                    }
+                    try
+                    {
+                        this.redisConnection = ConnectionMultiplexer.Connect(redisConnenctionString);
+                    }
+                    catch (Exception)
+                    {
 
-                    throw new Exception("Redis服务未启用，请开启该服务");
+                        throw new Exception("Redis服务未启用，请开启该服务");
+                    }
                 }
             }
+
             return this.redisConnection;
         }
 

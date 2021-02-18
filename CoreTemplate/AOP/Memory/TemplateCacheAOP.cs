@@ -22,7 +22,7 @@ namespace CoreTemplate.AOP.Memory
         {
             var method = invocation.MethodInvocationTarget ?? invocation.Method;
             //对当前方法的特性验证
-            var qCachingAttribute = method.GetCustomAttributes(true).FirstOrDefault(p => p.GetType() == typeof(CachingAttribute));
+            var qCachingAttribute = method.GetCustomAttributes(true).FirstOrDefault(p => p.GetType() == typeof(CachingAttribute)) as CachingAttribute;
             //只有那些指定的才可以被缓存，需要验证
             if (qCachingAttribute != null)
             {
@@ -41,7 +41,7 @@ namespace CoreTemplate.AOP.Memory
                 //存入缓存
                 if (!string.IsNullOrWhiteSpace(cacheKey))
                 {
-                    _cache.Set(cacheKey, invocation.ReturnValue);
+                    _cache.Set(cacheKey, invocation.ReturnValue,qCachingAttribute.AbsoluteExpiration);
                 }
             }
             else
@@ -55,15 +55,11 @@ namespace CoreTemplate.AOP.Memory
         {
             var typeName = invocation.TargetType.Name;
             var methodName = invocation.Method.Name;
-            var methodArguments = invocation.Arguments.Select(GetArgumentValue).Take(3).ToList();
+            var methodArguments = invocation.Arguments.Select(GetArgumentValue).ToList();
 
             string key = $"{typeName}:{methodName}:";
-            foreach (var param in methodArguments)
-            {
-                key += $"{param}:";
-            }
-
-            return key.TrimEnd(':');
+            key += string.Join(":", methodArguments);
+            return key;
         }
         //object 转 string
         private string GetArgumentValue(object arg)

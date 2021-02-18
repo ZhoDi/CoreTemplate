@@ -1,7 +1,7 @@
 ﻿using Autofac;
 using Autofac.Extras.DynamicProxy;
 using AutoMapper;
-using CoreTemplate.AOP.Log;
+using CoreTemplate.AOP;
 using CoreTemplate.AOP.Memory;
 using CoreTemplate.Application.Application;
 using CoreTemplate.Application.Application.Redis;
@@ -43,8 +43,8 @@ namespace CoreTemplate.Startup
             if (Convert.ToBoolean(Appsettings.app("AOP", "LogAOP", "Enabled" )))
             {
                 //日志AOP
-                builder.RegisterType<TemplateLogAOP>();
-                aopTypeList.Add(typeof(TemplateLogAOP));
+                builder.RegisterType<LogAOP>();
+                aopTypeList.Add(typeof(LogAOP));
             }
             if (Convert.ToBoolean(Appsettings.app("AOP", "MemoryCaching", "Enabled")))
             {
@@ -52,6 +52,13 @@ namespace CoreTemplate.Startup
                 builder.RegisterType<TemplateCacheAOP>();
                 aopTypeList.Add(typeof(TemplateCacheAOP));
             }
+            if (Convert.ToBoolean(Appsettings.app("AOP", "RedisCatchAOP", "Enabled")))
+            {
+                //Redis缓存AOP
+                builder.RegisterType<RedisCacheAOP>();
+                aopTypeList.Add(typeof(RedisCacheAOP));
+            }
+
             //注册Application.Services中的对象,Services中的类要以Services结尾，否则注册失败
             var dataAccess = Assembly.Load("CoreTemplate.Application");
             builder.RegisterAssemblyTypes(dataAccess)

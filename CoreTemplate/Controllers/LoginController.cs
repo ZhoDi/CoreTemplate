@@ -70,7 +70,6 @@ namespace CoreTemplate.Controllers
         [HttpGet("GetAllUser")]
         public IActionResult GetAllUser()
         {
-            var connection = Appsettings.app("", "");
             var result = _UserService.GetAllList();
             return Ok(new { res = result });
         }

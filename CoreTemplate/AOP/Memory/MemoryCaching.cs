@@ -23,9 +23,9 @@ namespace CoreTemplate.AOP.Memory
             return _cache.Get(cacheKey);
         }
 
-        public void Set(string cacheKey, object cacheValue)
+        public void Set(string cacheKey, object cacheValue,int catchTime)
         {
-            _cache.Set(cacheKey, cacheValue, TimeSpan.FromHours(2));
+            _cache.Set(cacheKey, cacheValue, TimeSpan.FromSeconds(catchTime));
         }
     }
 }

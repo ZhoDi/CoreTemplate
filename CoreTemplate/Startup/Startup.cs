@@ -147,6 +147,7 @@ namespace CoreTemplate.Startup
 
                 #endregion
             }
+            //静态文件
             app.UseStaticFiles();
 
             //跨域
