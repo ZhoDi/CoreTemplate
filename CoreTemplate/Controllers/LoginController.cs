@@ -73,5 +73,12 @@ namespace CoreTemplate.Controllers
             var result = _UserService.GetAllList();
             return Ok(new { res = result });
         }
+
+        [HttpGet("GetUserById")]
+        public async Task<IActionResult> GetUserById(int id)
+        {
+            var result = await _UserService.GetProcedureUserById(id);
+            return Ok(new { res = result });
+        }
     }
 }

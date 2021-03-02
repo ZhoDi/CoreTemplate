@@ -4,10 +4,14 @@ using CoreTemplate.Application.IServices;
 using CoreTemplate.Application.TemplateAttribute;
 using CoreTemplate.Domain.Entities;
 using CoreTemplate.Domain.IRepositories;
+using CoreTemplate.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace CoreTemplate.Application.Services
 {
@@ -16,12 +20,22 @@ namespace CoreTemplate.Application.Services
         private readonly IRepository<User, int> _UserRepository;
         private readonly IRepository<UserRole, int> _UserRoleRepository;
         private readonly IRepository<Role, int> _RoleRepository;
+        //定义数据访问上下文对象
+        protected readonly TempDbContext _dbContext;
 
-        public UserServices(IRepository<User, int> UserRepository, IRepository<UserRole, int> UserRoleRepository, IRepository<Role, int> RoleRepository, IMapper Mapper) : base(UserRepository, Mapper)
+        public UserServices(IRepository<User, int> UserRepository, IRepository<UserRole, int> UserRoleRepository, IRepository<Role, int> RoleRepository,
+            IMapper Mapper,TempDbContext dbContext) : base(UserRepository, Mapper)
         {
             _UserRepository = UserRepository;
             _UserRoleRepository = UserRoleRepository;
             _RoleRepository = RoleRepository;
+            _dbContext = dbContext;
+        }
+
+        public async Task<List<User>> GetProcedureUserById(int id)
+        {
+            var result=  await _UserRepository.GetFromSql(string.Format("CALL userbyid({0})", id)).ToListAsync();
+            return result;
         }
 
         [Caching]

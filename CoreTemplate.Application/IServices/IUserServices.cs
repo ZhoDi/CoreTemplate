@@ -3,6 +3,7 @@ using CoreTemplate.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace CoreTemplate.Application.IServices
 {
@@ -13,5 +14,7 @@ namespace CoreTemplate.Application.IServices
         User GetUserInfoByName(string name);
 
         void RegisterUser(UserRegisterDto userRegisterDto);
+
+        Task<List<User>> GetProcedureUserById(int id);
     }
 }
