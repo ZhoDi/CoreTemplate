@@ -10,7 +10,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CoreTemplate.AuthHelp
+namespace CoreTemplate.Application.Helper
 {
     public class JwtHelper
     {

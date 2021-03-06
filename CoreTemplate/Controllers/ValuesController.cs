@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CoreTemplate.Controllers
 {
     /// <summary>
-    /// Values控制器
+    /// Values控制器 配置了Admin权限
     /// </summary>
     [Route("api/[controller]")]
     [Authorize(Policy = "Admin")]

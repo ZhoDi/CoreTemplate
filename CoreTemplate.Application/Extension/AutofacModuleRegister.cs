@@ -1,21 +1,18 @@
 ﻿using Autofac;
 using Autofac.Extras.DynamicProxy;
 using AutoMapper;
-using CoreTemplate.AOP;
-using CoreTemplate.AOP.Memory;
-using CoreTemplate.Application.Application;
+using CoreTemplate.Application.AOP.Log;
+using CoreTemplate.Application.AOP.Memory;
 using CoreTemplate.Application.Application.Redis;
 using CoreTemplate.Application.Helper;
-using CoreTemplate.Domain.APIModel.User;
 using CoreTemplate.Domain.IRepositories;
 using CoreTemplate.EntityFrameworkCore.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
-namespace CoreTemplate.Startup
+namespace CoreTemplate.Application.Extension
 {
     public class AutofacModuleRegister : Autofac.Module
     {
@@ -49,8 +46,8 @@ namespace CoreTemplate.Startup
             if (Convert.ToBoolean(Appsettings.app("AOP", "MemoryCaching", "Enabled")))
             {
                 //缓存AOP
-                builder.RegisterType<TemplateCacheAOP>();
-                aopTypeList.Add(typeof(TemplateCacheAOP));
+                builder.RegisterType<MemoryCacheAOP>();
+                aopTypeList.Add(typeof(MemoryCacheAOP));
             }
             if (Convert.ToBoolean(Appsettings.app("AOP", "RedisCatchAOP", "Enabled")))
             {

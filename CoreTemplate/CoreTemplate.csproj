@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <!--<AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>-->
     <UserSecretsId>2161b614-a83e-42e7-9f42-d0156bec1cfa</UserSecretsId>
@@ -11,13 +11,6 @@
     <DocumentationFile>..\CoreTemplate\CoreTemplate.xml</DocumentationFile>
     <NoWarn>1701;1702;1591;</NoWarn>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.4" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\CoreTemplate.Application\CoreTemplate.Application.csproj" />
@@ -36,9 +29,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Extension\" />
+    <Folder Include="Log\" />
   </ItemGroup>
 
-  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="http://json.schemastore.org/behat" properties_4launchsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+  <ProjectExtensions><VisualStudio><UserProperties properties_4launchsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 
 </Project>

@@ -126,7 +126,7 @@ namespace CoreTemplate.Domain.IRepositories
         /// <param name="entity">实体</param>
         /// <param name="autoSave">是否立即执行保存</param>
         /// <returns></returns>
-        TEntity Insert(TEntity entity);
+        TEntity Insert(TEntity entity, bool autoSave = true);
 
         /// <summary>
         /// 新增实体
@@ -134,7 +134,7 @@ namespace CoreTemplate.Domain.IRepositories
         /// <param name="entity"></param>
         /// <param name="autoSave"></param>
         /// <returns></returns>
-        Task<TEntity> InsertAsync(TEntity entity);
+        Task<TEntity> InsertAsync(TEntity entity, bool autoSave = true);
 
         void BatchInsert(List<TEntity> entitys);
         Task BatchInsertAsync(List<TEntity> entitys);
@@ -144,8 +144,8 @@ namespace CoreTemplate.Domain.IRepositories
         /// </summary>
         /// <param name="entity">实体</param>
         /// <param name="autoSave">是否立即执行保存</param>
-        TEntity Update(TEntity entity);
-        Task<TEntity> UpdateAsync(TEntity entity);
+        TEntity Update(TEntity entity, bool autoSave = true);
+        Task<TEntity> UpdateAsync(TEntity entity, bool autoSave = true);
 
 
         /// <summary>
@@ -153,14 +153,14 @@ namespace CoreTemplate.Domain.IRepositories
         /// </summary>
         /// <param name="entity">实体</param>
         /// <param name="autoSave">是否立即执行保存</param>
-        TEntity InsertOrUpdate(TEntity entity);
+        TEntity InsertOrUpdate(TEntity entity, bool autoSave = true);
 
         /// <summary>
         /// 新增或更新实体
         /// </summary>
         /// <param name="entity">实体</param>
         /// <param name="autoSave">是否立即执行保存</param>
-        Task<TEntity> InsertOrUpdateAsync(TEntity entity);
+        Task<TEntity> InsertOrUpdateAsync(TEntity entity, bool autoSave = true);
 
         void AttachIfNot(TEntity entity);
 
@@ -172,16 +172,14 @@ namespace CoreTemplate.Domain.IRepositories
         /// </summary>
         /// <param name="entity">要删除的实体</param>
         /// <param name="autoSave">是否立即执行保存</param>
-        void Delete(TEntity entity);
-        Task DeleteAsync(TEntity entity);
+        void Delete(TEntity entity, bool autoSave = true);
 
         /// <summary>
-        /// 删除实体
+        /// 根据Id删除实体
         /// </summary>
         /// <param name="id">实体主键</param>
         /// <param name="autoSave">是否立即执行保存</param>
-        void Delete(TPrimaryKey id);
-        Task DeleteAsync(TPrimaryKey id);
+        void Delete(TPrimaryKey id, bool autoSave = true);
 
         /// <summary>
         /// 根据条件删除实体
@@ -189,7 +187,6 @@ namespace CoreTemplate.Domain.IRepositories
         /// <param name="where">lambda表达式</param>
         /// <param name="autoSave">是否自动保存</param>
         void Delete(Expression<Func<TEntity, bool>> where);
-        Task DeleteAsync(Expression<Func<TEntity, bool>> predicate);
 
         /// <summary>
         /// 批量删除

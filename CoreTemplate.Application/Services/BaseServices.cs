@@ -141,10 +141,5 @@ namespace CoreTemplate.Application.Services
             await _Repository.UpdateAsync(entity);
             return dto;
         }
-
-        public async Task DeleteAsync(Expression<Func<TEntity, bool>> where)
-        {
-            await _Repository.DeleteAsync(where);
-        }
     }
 }

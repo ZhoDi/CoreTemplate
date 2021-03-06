@@ -1,19 +1,17 @@
 ﻿using Castle.DynamicProxy;
 using CoreTemplate.Application.TemplateAttribute;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
-namespace CoreTemplate.AOP.Memory
+namespace CoreTemplate.Application.AOP.Memory
 {
-    public class TemplateCacheAOP : IInterceptor
+    public class MemoryCacheAOP : IInterceptor
     {
         /// <summary>
         /// 注入构造接口
         /// </summary>
         private ICaching _cache;
-        public TemplateCacheAOP(ICaching cache)
+        public MemoryCacheAOP(ICaching cache)
         {
             _cache = cache;
         }

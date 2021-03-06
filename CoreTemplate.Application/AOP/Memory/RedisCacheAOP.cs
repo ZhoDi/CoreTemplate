@@ -2,11 +2,10 @@
 using CoreTemplate.Application.Application.Redis;
 using CoreTemplate.Application.TemplateAttribute;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CoreTemplate.AOP.Memory
+namespace CoreTemplate.Application.AOP.Memory
 {
     public class RedisCacheAOP: IInterceptor
     {
@@ -15,7 +14,6 @@ namespace CoreTemplate.AOP.Memory
         {
             _cache = cache;
         }
-
 
         //Intercept方法是拦截的关键所在，也是IInterceptor接口中的唯一定义
         public void Intercept(IInvocation invocation)

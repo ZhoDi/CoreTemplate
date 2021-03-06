@@ -177,7 +177,7 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// <param name="order"></param>
         /// <param name="orderType"></param>
         /// <returns></returns>
-        public PageModel<TEntity> GetPageList(int intPageIndex, int intPageSize, Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, object>> order,  string orderType = "asc")
+        public PageModel<TEntity> GetPageList(int intPageIndex, int intPageSize, Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, object>> order, string orderType = "asc")
         {
             var result = GetAll().Where(where);
             int totalCount = result.Count();
@@ -207,7 +207,7 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// <param name="order"></param>
         /// <param name="orderType"></param>
         /// <returns></returns>
-        public async Task<PageModel<TEntity>> GetPageListAsync(int intPageIndex, int intPageSize, Expression<Func<TEntity, bool>> whereExpression,  Expression<Func<TEntity, object>> order, string orderType = "asc")
+        public async Task<PageModel<TEntity>> GetPageListAsync(int intPageIndex, int intPageSize, Expression<Func<TEntity, bool>> whereExpression, Expression<Func<TEntity, object>> order, string orderType = "asc")
         {
             var result = GetAll().Where(whereExpression);
             int totalCount = result.Count();
@@ -248,7 +248,7 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
                     result = result.OrderByDescending(order);
             }
             int pageCount = (int)Math.Ceiling((double)(totalCount / intPageSize));
-            var _list =  result.Skip((intPageIndex - 1) * intPageSize).Take(intPageSize).ToList();
+            var _list = result.Skip((intPageIndex - 1) * intPageSize).Take(intPageSize).ToList();
 
             return new PageModel<TEntity>() { PageCount = pageCount, TotalCount = totalCount, PageIndex = intPageIndex, PageSize = intPageSize, TEntityList = _list };
         }
@@ -260,7 +260,7 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// <returns></returns>
         public IQueryable<TEntity> GetFromSql(string sql)
         {
-            var _list = GetAll().FromSql(sql);
+            var _list = Table.FromSqlRaw(sql);
 
             return _list;
         }
@@ -274,9 +274,12 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// <param name="entity">实体</param>
         /// <param name="autoSave">是否立即执行保存</param>
         /// <returns></returns>
-        public TEntity Insert(TEntity entity)
+        public TEntity Insert(TEntity entity, bool autoSave = true)
         {
-            return Table.Add(entity).Entity;
+            var result = Table.Add(entity).Entity;
+            if (autoSave)
+                Save();
+            return result;
         }
 
         /// <summary>
@@ -285,9 +288,12 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// <param name="entity">实体</param>
         /// <param name="autoSave">是否立即执行保存</param>
         /// <returns></returns>
-        public Task<TEntity> InsertAsync(TEntity entity)
+        public async Task<TEntity> InsertAsync(TEntity entity, bool autoSave = true)
         {
-            return Task.FromResult(Insert(entity));
+            var result = await InsertAsync(entity);
+            if (autoSave)
+                await SaveAsync();
+            return result;
         }
 
         /// <summary>
@@ -315,11 +321,13 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// </summary>
         /// <param name="entity">实体</param>
         /// <param name="autoSave">是否立即执行保存</param>
-        public TEntity Update(TEntity entity)
+        public TEntity Update(TEntity entity, bool autoSave = true)
         {
-            // 发现并没什么用先，先注释
+            // 发现并没什么用，先注释
             //AttachIfNot(entity);
             _dbContext.Entry(entity).State = EntityState.Modified;
+            if (autoSave)
+                Save();
             return entity;
         }
 
@@ -328,10 +336,12 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// </summary>
         /// <param name="entity">实体</param>
         /// <param name="autoSave">是否立即执行保存</param>
-        public Task<TEntity> UpdateAsync(TEntity entity)
+        public async Task<TEntity> UpdateAsync(TEntity entity, bool autoSave = true)
         {
-            Update(entity);
-            return Task.FromResult(entity);
+            await UpdateAsync(entity);
+            if (autoSave)
+                Save();
+            return entity;
         }
 
         /// <summary>
@@ -339,11 +349,14 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// </summary>
         /// <param name="entity">实体</param>
         /// <param name="autoSave">是否立即执行保存</param>
-        public TEntity InsertOrUpdate(TEntity entity)
+        public TEntity InsertOrUpdate(TEntity entity, bool autoSave = true)
         {
-            return entity.IsTransient()
-                ? Insert(entity)
-                : Update(entity);
+            var result = entity.IsTransient()
+                 ? Insert(entity)
+                 : Update(entity);
+            if (autoSave)
+                Save();
+            return result;
         }
 
         /// <summary>
@@ -351,11 +364,14 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// </summary>
         /// <param name="entity">实体</param>
         /// <param name="autoSave">是否立即执行保存</param>
-        public async Task<TEntity> InsertOrUpdateAsync(TEntity entity)
+        public async Task<TEntity> InsertOrUpdateAsync(TEntity entity, bool autoSave = true)
         {
-            return entity.IsTransient()
-                ? await InsertAsync(entity)
-                : await UpdateAsync(entity);
+            var result = entity.IsTransient()
+                    ? await InsertAsync(entity)
+                    : await UpdateAsync(entity);
+            if (autoSave)
+                await SaveAsync();
+            return result;
         }
 
         /// <summary>
@@ -374,11 +390,11 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
 
         #region Delete
         /// <summary>
-        /// 删除实体
+        /// 根据Id删除实体
         /// </summary>
         /// <param name="id">实体主键</param>
         /// <param name="autoSave">是否立即执行保存</param>
-        public void Delete(TPrimaryKey id)
+        public void Delete(TPrimaryKey id, bool autoSave = true)
         {
             var entity = Table.Local.FirstOrDefault(ent => EqualityComparer<TPrimaryKey>.Default.Equals(ent.Id, id));
             if (entity == null)
@@ -389,30 +405,22 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
                     return;
                 }
             }
+            Delete(entity, autoSave);
+        }
 
-            Delete(entity);
-        }
-        public Task DeleteAsync(TPrimaryKey id)
-        {
-            Delete(id);
-            return Task.FromResult(0);
-        }
         /// <summary>
         /// 删除实体
         /// </summary>
         /// <param name="entity">要删除的实体</param>
         /// <param name="autoSave">是否立即执行保存</param>
-        public void Delete(TEntity entity)
+        public void Delete(TEntity entity, bool autoSave = true)
         {
             //AttachIfNot(entity);
             _dbContext.Entry(entity).State = EntityState.Deleted;
+            if (autoSave)
+                Save();
         }
 
-        public Task DeleteAsync(TEntity entity)
-        {
-            Delete(entity);
-            return Task.FromResult(0);
-        }
         /// <summary>
         /// 根据条件删除实体
         /// </summary>
@@ -420,14 +428,7 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// <param name="autoSave">是否自动保存</param>
         public void Delete(Expression<Func<TEntity, bool>> predicate)
         {
-
             DeleteRange(GetAll().Where(predicate));
-        }
-
-        public Task DeleteAsync(Expression<Func<TEntity, bool>> predicate)
-        {
-            Delete(predicate);
-            return Task.FromResult(0);
         }
 
         /// <summary>
@@ -437,6 +438,7 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         public void DeleteRange(IQueryable<TEntity> entities)
         {
             Table.RemoveRange(entities);
+            Save();
         }
 
         #endregion
@@ -452,7 +454,7 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
 
         public async Task SaveAsync()
         {
-           await _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
         }
 
         /// <summary>

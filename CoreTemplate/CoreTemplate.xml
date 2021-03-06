@@ -4,54 +4,12 @@
         <name>CoreTemplate</name>
     </assembly>
     <members>
-        <member name="F:CoreTemplate.AOP.Memory.MemoryCaching._cache">
+        <member name="M:CoreTemplate.Controllers.LoginController.GetUserById(System.String)">
             <summary>
-            实例化缓存接口ICaching
+            根据姓名获取用户信息(配置缓存)
             </summary>
-        </member>
-        <member name="F:CoreTemplate.AOP.Memory.TemplateCacheAOP._cache">
-            <summary>
-            注入构造接口
-            </summary>
-        </member>
-        <member name="M:CoreTemplate.AuthHelp.JwtHelper.IssueJwt(CoreTemplate.AuthHelp.TokenModel)">
-            <summary>
-            根据传进来的TokenModel生成taokn字符串
-            </summary>
-            <param name="tokenModel"></param>
+            <param name="name"></param>
             <returns></returns>
-        </member>
-        <member name="M:CoreTemplate.AuthHelp.JwtHelper.SerializeJwt(System.String)">
-            <summary>
-            解析
-            </summary>
-            <param name="jwtStr"></param>
-            <returns></returns>
-        </member>
-        <member name="T:CoreTemplate.AuthHelp.TokenModel">
-            <summary>
-            令牌类
-            </summary>
-        </member>
-        <member name="P:CoreTemplate.AuthHelp.TokenModel.Uid">
-            <summary>
-            用户Id
-            </summary>
-        </member>
-        <member name="P:CoreTemplate.AuthHelp.TokenModel.Role">
-            <summary>
-            角色
-            </summary>
-        </member>
-        <member name="P:CoreTemplate.AuthHelp.TokenModel.Project">
-            <summary>
-            项目名称
-            </summary>
-        </member>
-        <member name="P:CoreTemplate.AuthHelp.TokenModel.TokenType">
-            <summary>
-            令牌类型
-            </summary>
         </member>
         <member name="M:CoreTemplate.Controllers.LoginController.TestSQLInjection(System.String)">
             <summary>
@@ -61,7 +19,7 @@
         </member>
         <member name="T:CoreTemplate.Controllers.ValuesController">
             <summary>
-            Values控制器
+            Values控制器 配置了Admin权限
             </summary>
         </member>
         <member name="M:CoreTemplate.Controllers.ValuesController.Get">

@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using CoreTemplate.Application.Dto.User;
 using CoreTemplate.Application.Helper;
 using CoreTemplate.Application.IServices;
-using CoreTemplate.AuthHelp;
 using CoreTemplate.Domain.APIModel.User;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoreTemplate.Controllers
@@ -78,6 +73,18 @@ namespace CoreTemplate.Controllers
         public async Task<IActionResult> GetUserById(int id)
         {
             var result = await _UserService.GetProcedureUserById(id);
+            return Ok(new { res = result });
+        }
+
+        /// <summary>
+        /// 根据姓名获取用户信息(配置缓存)
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        [HttpGet("GetUserByName")]
+        public IActionResult GetUserById(string name)
+        {
+            var result =  _UserService.GetUserInfoByName(name);
             return Ok(new { res = result });
         }
 

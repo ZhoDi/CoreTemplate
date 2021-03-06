@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CoreTemplate.Config
+namespace CoreTemplate.Application.AutoMapper
 {
     public class OrganizationProfile: Profile
     {

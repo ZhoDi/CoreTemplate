@@ -7,9 +7,9 @@ namespace CoreTemplate.EntityFrameworkCore.Seed
 {
     public class SeedData
     {
-        public static void SeedDb(IContainer Container)
+        public static void SeedDb(TempDbContext dbContext)
         {
-            new UserRoleCreator(Container).Create();
+            new UserRoleCreator().Create(dbContext);
         }
     }
 }

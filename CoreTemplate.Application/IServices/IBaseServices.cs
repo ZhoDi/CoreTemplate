@@ -28,6 +28,5 @@ namespace CoreTemplate.Application.IServices
         TDto Update(TDto entity);
         Task<TDto> UpdateAsync(TDto entity);
         void Delete(Expression<Func<TEntity, bool>> where);
-        Task DeleteAsync(Expression<Func<TEntity, bool>> where);
     }
 }

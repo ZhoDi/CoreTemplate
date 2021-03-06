@@ -4,10 +4,7 @@ using CoreTemplate.Application.IServices;
 using CoreTemplate.Application.TemplateAttribute;
 using CoreTemplate.Domain.Entities;
 using CoreTemplate.Domain.IRepositories;
-using CoreTemplate.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using MySql.Data.MySqlClient;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -20,16 +17,13 @@ namespace CoreTemplate.Application.Services
         private readonly IRepository<User, int> _UserRepository;
         private readonly IRepository<UserRole, int> _UserRoleRepository;
         private readonly IRepository<Role, int> _RoleRepository;
-        //定义数据访问上下文对象
-        protected readonly TempDbContext _dbContext;
 
         public UserServices(IRepository<User, int> UserRepository, IRepository<UserRole, int> UserRoleRepository, IRepository<Role, int> RoleRepository,
-            IMapper Mapper, TempDbContext dbContext) : base(UserRepository, Mapper)
+            IMapper Mapper) : base(UserRepository, Mapper)
         {
             _UserRepository = UserRepository;
             _UserRoleRepository = UserRoleRepository;
             _RoleRepository = RoleRepository;
-            _dbContext = dbContext;
         }
 
         public async Task<List<User>> GetProcedureUserById(int id)
@@ -91,10 +85,10 @@ namespace CoreTemplate.Application.Services
         public async Task<List<User>> TestSQLInjection(string name)
         {
             //这种字符串插值方式会导致SQL注入
-            //var result = await _dbContext.Users.FromSql("SELECT * FROM USERS WHERE Name='" + name + "';").ToListAsync();
+            //var result = await _UserRepository.GetFromSql("SELECT * FROM USERS WHERE Name='" + name + "';").ToListAsync();
 
             //选择$进行字符串检查就不会导致SQL注入了
-            var result = await _dbContext.Users.FromSql($@"SELECT * FROM USERS WHERE Name='{name}';").ToListAsync();
+            var result = await _UserRepository.GetFromSql($@"SELECT * FROM USERS WHERE Name='{name}';").ToListAsync();
             return result;
         }
     }

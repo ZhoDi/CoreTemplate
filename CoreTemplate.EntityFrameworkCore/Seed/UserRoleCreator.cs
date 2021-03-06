@@ -11,54 +11,43 @@ namespace CoreTemplate.EntityFrameworkCore.Seed
 {
     public class UserRoleCreator
     {
-        private static IContainer Container;
-        public UserRoleCreator(IContainer container)
+        public void Create(TempDbContext dbContext)
         {
-            Container = container;
-        }
-        public void Create()
-        {
-            using (var scope = Container.BeginLifetimeScope())
+
+            var adminRoleForHost = dbContext.Roles.ToList();
+            var roleForAdmin = new Role();
+            var roleForUser = new Role();
+
+            if (!adminRoleForHost.Any())
             {
-                var _context = scope.Resolve<TempDbContext>();
+                roleForAdmin = dbContext.Roles.Add(new Role() { Name = ConstName.Admin, IsDeleted = false, CreateDate = DateTimeOffset.Now.ToUnixTimeSeconds() }).Entity;
 
-                var adminRoleForHost = _context.Roles.ToList();
-                var roleForAdmin = new Role();
-                var roleForUser = new Role();
+                roleForUser = dbContext.Roles.Add(new Role() { Name = ConstName.User, IsDeleted = false, CreateDate = DateTimeOffset.Now.ToUnixTimeSeconds() }).Entity;
 
-                if (!adminRoleForHost.Any())
+                var adminUserForHost = dbContext.Users.IgnoreQueryFilters().FirstOrDefault(u => u.Name == ConstName.Admin);
+                if (adminUserForHost == null)
                 {
-                    roleForAdmin= _context.Roles.Add(new Role() { Name = ConstName.Admin, IsDeleted = false, CreateDate = DateTimeOffset.Now.ToUnixTimeSeconds() }).Entity;
-
-                    roleForUser = _context.Roles.Add(new Role() { Name = ConstName.User, IsDeleted = false, CreateDate = DateTimeOffset.Now.ToUnixTimeSeconds() }).Entity;
-
-                    var adminUserForHost = _context.Users.IgnoreQueryFilters().FirstOrDefault(u => u.Name == ConstName.Admin);
-                    if (adminUserForHost == null)
+                    var user = new User
                     {
-                        var user = new User
-                        {
-                            Name = ConstName.Admin,
-                            Email = "910824572@qq.com",
-                            Mobile = "15737652771",
-                            IsDeleted = false,
-                            Avatar = "",
-                            PassWord = "123456",
-                            Gender = 1,
-                            Number = "1011150",
-                        };
+                        Name = ConstName.Admin,
+                        Email = "910824572@qq.com",
+                        Mobile = "15737652771",
+                        IsDeleted = false,
+                        Avatar = "",
+                        PassWord = "123456",
+                        Gender = 1,
+                        Number = "1011150",
+                    };
 
-                        adminUserForHost = _context.Users.Add(user).Entity;
-                        _context.SaveChanges();
+                    adminUserForHost = dbContext.Users.Add(user).Entity;
+                    dbContext.SaveChanges();
 
 
-                        //// 分配管理员角色
-                        _context.UserRoles.Add(new UserRole() { UserId = adminUserForHost.Id, RoleId = roleForAdmin.Id });
-                        _context.UserRoles.Add(new UserRole() { UserId = adminUserForHost.Id, RoleId = roleForUser.Id });
-                    }
-                    _context.SaveChanges();
+                    //// 分配管理员角色
+                    dbContext.UserRoles.Add(new UserRole() { UserId = adminUserForHost.Id, RoleId = roleForAdmin.Id });
+                    dbContext.UserRoles.Add(new UserRole() { UserId = adminUserForHost.Id, RoleId = roleForUser.Id });
                 }
-
-
+                dbContext.SaveChanges();
             }
         }
     }
