@@ -80,5 +80,16 @@ namespace CoreTemplate.Controllers
             var result = await _UserService.GetProcedureUserById(id);
             return Ok(new { res = result });
         }
+
+        /// <summary>
+        /// 测试SQL注入
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("TestSQLInjection")]
+        public async Task<IActionResult> TestSQLInjection(string name)
+        {
+            var result = await _UserService.TestSQLInjection(name);
+            return Ok(new { res= result });
+        }
     }
 }

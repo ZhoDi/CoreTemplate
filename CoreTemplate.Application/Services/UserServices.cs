@@ -24,7 +24,7 @@ namespace CoreTemplate.Application.Services
         protected readonly TempDbContext _dbContext;
 
         public UserServices(IRepository<User, int> UserRepository, IRepository<UserRole, int> UserRoleRepository, IRepository<Role, int> RoleRepository,
-            IMapper Mapper,TempDbContext dbContext) : base(UserRepository, Mapper)
+            IMapper Mapper, TempDbContext dbContext) : base(UserRepository, Mapper)
         {
             _UserRepository = UserRepository;
             _UserRoleRepository = UserRoleRepository;
@@ -34,7 +34,7 @@ namespace CoreTemplate.Application.Services
 
         public async Task<List<User>> GetProcedureUserById(int id)
         {
-            var result=  await _UserRepository.GetFromSql(string.Format("CALL userbyid({0})", id)).ToListAsync();
+            var result = await _UserRepository.GetFromSql($@"CALL userbyid({0})").ToListAsync();
             return result;
         }
 
@@ -86,6 +86,16 @@ namespace CoreTemplate.Application.Services
             userRole.UserId = user.Id;
 
             _UserRoleRepository.Insert(userRole);
+        }
+
+        public async Task<List<User>> TestSQLInjection(string name)
+        {
+            //这种字符串插值方式会导致SQL注入
+            //var result = await _dbContext.Users.FromSql("SELECT * FROM USERS WHERE Name='" + name + "';").ToListAsync();
+
+            //选择$进行字符串检查就不会导致SQL注入了
+            var result = await _dbContext.Users.FromSql($@"SELECT * FROM USERS WHERE Name='{name}';").ToListAsync();
+            return result;
         }
     }
 }

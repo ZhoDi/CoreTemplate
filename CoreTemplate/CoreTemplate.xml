@@ -53,6 +53,12 @@
             令牌类型
             </summary>
         </member>
+        <member name="M:CoreTemplate.Controllers.LoginController.TestSQLInjection(System.String)">
+            <summary>
+            测试SQL注入
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:CoreTemplate.Controllers.ValuesController">
             <summary>
             Values控制器
