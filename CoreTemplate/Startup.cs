@@ -13,6 +13,7 @@ using CoreTemplate.Application.Helper;
 using CoreTemplate.Application.Middlewares;
 using CoreTemplate.Application.Extension;
 using System.Linq;
+using System.Reflection;
 
 namespace CoreTemplate
 {
@@ -71,8 +72,7 @@ namespace CoreTemplate
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            app.UseSwaggerMilddleware();
+            app.UseSwaggerMilddleware(()=> GetType().GetTypeInfo().Assembly.GetManifestResourceStream("CoreTemplate.wwwroot.swagger.ui.index.html"));
 
             //跨域
             app.UseCors(Appsettings.app("Startup", "Cors", "PolicyName"));

@@ -5,12 +5,23 @@
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <!--<AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>-->
     <UserSecretsId>2161b614-a83e-42e7-9f42-d0156bec1cfa</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>..\CoreTemplate\CoreTemplate.xml</DocumentationFile>
     <NoWarn>1701;1702;1591;</NoWarn>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\swagger\ui\index.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="wwwroot\swagger\ui\index.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\CoreTemplate.Application\CoreTemplate.Application.csproj" />
@@ -23,13 +34,23 @@
     <Content Update="wwwroot\swagger\ui\abp.swagger.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Update="wwwroot\swagger\ui\index.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Log\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="CoreTemplate.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Dockerfile">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties properties_4launchsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>

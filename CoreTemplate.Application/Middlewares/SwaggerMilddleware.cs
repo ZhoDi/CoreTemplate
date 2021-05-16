@@ -11,21 +11,24 @@ namespace CoreTemplate.Application.Middlewares
     /// </summary>
     public static class SwaggerMilddleware
     {
-        public static void UseSwaggerMilddleware(this IApplicationBuilder app)
+        public static void UseSwaggerMilddleware(this IApplicationBuilder app, Func<Stream> streamHtml)
         {
             app.UseSwagger();
-            app.UseSwaggerUI(options =>
+            try
             {
-                options.SwaggerEndpoint("/swagger/v1/swagger.json", "CoreTemplate API v1");
-                var basePath = AppContext.BaseDirectory;
-
-                var index = new FileStream(Path.Combine(basePath + @"\wwwroot\swagger\ui\index.html"), FileMode.Open);
-                //自定义UI
-                options.IndexStream = () =>
+                app.UseSwaggerUI(options =>
                 {
-                    return index;
-                };
-            });
+                    options.SwaggerEndpoint("/swagger/v1/swagger.json", "CoreTemplate API v1");
+                    var basePath = AppContext.BaseDirectory;
+                    //var index = new FileStream(Path.Combine(basePath + @"/wwwroot/swagger/ui/index.html"), FileMode.Open);
+                    //自定义UI
+                    options.IndexStream = streamHtml;
+                });
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("swagger报错"+e);
+            }
         }
     }
 }
