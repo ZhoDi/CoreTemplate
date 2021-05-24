@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CoreTemplate.Application.Dto
+﻿namespace CoreTemplate.Application.Dto.Base
 {
     public abstract class Dto<TPrimaryKey> :IDto<TPrimaryKey>
     {

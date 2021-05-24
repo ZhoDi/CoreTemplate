@@ -1,11 +1,7 @@
 ﻿using CoreTemplate.Application.AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace CoreTemplate.Application.Extension
+namespace CoreTemplate.Extension
 {
     /// <summary>
     /// AutoMapper服务

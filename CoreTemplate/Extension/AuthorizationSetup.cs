@@ -1,15 +1,14 @@
-﻿using CoreTemplate.Application.Helper;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CoreTemplate.Application.Helper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 
-namespace CoreTemplate.Application.Extension
+namespace CoreTemplate.Extension
 {
     /// <summary>
     /// 授权服务
@@ -22,8 +21,8 @@ namespace CoreTemplate.Application.Extension
             if (services == null) throw new ArgumentNullException(nameof(services));
 
             #region 令牌
-            var Issuer = Appsettings.App("Authentication", "JwtBearer", "Issuer");
-            var Audience = Appsettings.App("Authentication", "JwtBearer", "Audience");
+            var issuer = Appsettings.App("Authentication", "JwtBearer", "Issuer");
+            var audience = Appsettings.App("Authentication", "JwtBearer", "Audience");
             var token = new TokenValidationParameters
             {
                 // 秘钥
@@ -31,10 +30,10 @@ namespace CoreTemplate.Application.Extension
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Appsettings.App("Authentication", "JwtBearer", "SecurityKey"))),
                 // 发行人
                 ValidateIssuer = true,
-                ValidIssuer = Issuer,
+                ValidIssuer = issuer,
                 // 订阅人
                 ValidateAudience = true,
-                ValidAudience = Audience,
+                ValidAudience = audience,
                 // 令牌过期
                 ValidateLifetime = true,
                 RequireSignedTokens = true,
@@ -73,12 +72,12 @@ namespace CoreTemplate.Application.Extension
                         var token = context.Request.Headers["Authorization"].ObjToString().Replace("Bearer ", "");
                         var jwtToken = (new JwtSecurityTokenHandler()).ReadJwtToken(token);
 
-                        if (jwtToken.Issuer != Issuer)
+                        if (jwtToken.Issuer != issuer)
                         {
                             context.Response.Headers.Add("Token-Error-Iss", "issuer is wrong!");
                         }
 
-                        if (jwtToken.Audiences.FirstOrDefault() != Audience)
+                        if (jwtToken.Audiences.FirstOrDefault() != audience)
                         {
                             context.Response.Headers.Add("Token-Error-Aud", "Audience is wrong!");
                         }

@@ -1,10 +1,8 @@
-﻿using Microsoft.AspNetCore.Builder;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Text;
+using Microsoft.AspNetCore.Builder;
 
-namespace CoreTemplate.Application.Middlewares
+namespace CoreTemplate.Middlewares
 {
     /// <summary>
     /// Swagger 中间件

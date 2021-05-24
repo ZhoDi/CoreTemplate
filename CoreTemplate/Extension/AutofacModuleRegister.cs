@@ -1,4 +1,7 @@
-﻿using Autofac;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
+using Autofac;
 using Autofac.Extras.DynamicProxy;
 using AutoMapper;
 using CoreTemplate.Application.AOP.Log;
@@ -7,12 +10,8 @@ using CoreTemplate.Application.Application.Redis;
 using CoreTemplate.Application.Helper;
 using CoreTemplate.Domain.IRepositories;
 using CoreTemplate.EntityFrameworkCore.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 
-namespace CoreTemplate.Application.Extension
+namespace CoreTemplate.Extension
 {
     public class AutofacModuleRegister : Autofac.Module
     {

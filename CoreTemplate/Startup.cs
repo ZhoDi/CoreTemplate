@@ -10,10 +10,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using CoreTemplate.Application.Helper;
-using CoreTemplate.Application.Middlewares;
-using CoreTemplate.Application.Extension;
 using System.Linq;
 using System.Reflection;
+using CoreTemplate.Extension;
+using CoreTemplate.Middlewares;
 
 namespace CoreTemplate
 {

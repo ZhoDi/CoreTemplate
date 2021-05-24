@@ -57,14 +57,14 @@ namespace CoreTemplate.Application.Helper
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Authentication:JwtBearer:SecurityKey"]));
 
             //加密
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var jwt = new JwtSecurityToken(
                 //上面生命的"身份单元集合"相当于身份证上的姓名,性别...等基本信息
                 claims: claims,
 
                 //凭证
-                signingCredentials: creds);
+                signingCredentials: cred);
 
             //生成JWT字符串
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
@@ -80,7 +80,7 @@ namespace CoreTemplate.Application.Helper
         public static TokenModel SerializeJwt(string jwtStr)
         {
             var jwtHandler = new JwtSecurityTokenHandler();
-            JwtSecurityToken jwtToken = jwtHandler.ReadJwtToken(jwtStr);
+            var jwtToken = jwtHandler.ReadJwtToken(jwtStr);
             object role;
             try
             {
@@ -115,13 +115,5 @@ namespace CoreTemplate.Application.Helper
         /// 角色
         /// </summary>
         public string Role { get; set; }
-        /// <summary>
-        /// 项目名称
-        /// </summary>
-        public string Project { get; set; }
-        /// <summary>
-        /// 令牌类型
-        /// </summary>
-        public string TokenType { get; set; }
     }
 }

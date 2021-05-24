@@ -38,6 +38,7 @@
 
   <ItemGroup>
     <Folder Include="Log\" />
+    <Folder Include="Filters\" />
   </ItemGroup>
 
   <ItemGroup>

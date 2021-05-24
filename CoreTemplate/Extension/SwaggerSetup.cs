@@ -1,10 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using System.IO;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
-using System;
-using System.IO;
 
-namespace CoreTemplate.Application.Extension
+namespace CoreTemplate.Extension
 {
     /// <summary>
     /// Swagger 服务
