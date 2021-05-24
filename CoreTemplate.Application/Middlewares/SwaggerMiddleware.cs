@@ -9,9 +9,9 @@ namespace CoreTemplate.Application.Middlewares
     /// <summary>
     /// Swagger 中间件
     /// </summary>
-    public static class SwaggerMilddleware
+    public static class SwaggerMiddleware
     {
-        public static void UseSwaggerMilddleware(this IApplicationBuilder app, Func<Stream> streamHtml)
+        public static void UseSwaggerMiddleware(this IApplicationBuilder app, Func<Stream> streamHtml)
         {
             app.UseSwagger();
             try

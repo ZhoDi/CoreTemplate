@@ -5,13 +5,13 @@ using System.Linq;
 
 namespace CoreTemplate.Application.AOP.Memory
 {
-    public class MemoryCacheAOP : IInterceptor
+    public class MemoryCacheAop : IInterceptor
     {
         /// <summary>
         /// 注入构造接口
         /// </summary>
-        private ICaching _cache;
-        public MemoryCacheAOP(ICaching cache)
+        private readonly ICaching _cache;
+        public MemoryCacheAop(ICaching cache)
         {
             _cache = cache;
         }
@@ -20,9 +20,8 @@ namespace CoreTemplate.Application.AOP.Memory
         {
             var method = invocation.MethodInvocationTarget ?? invocation.Method;
             //对当前方法的特性验证
-            var qCachingAttribute = method.GetCustomAttributes(true).FirstOrDefault(p => p.GetType() == typeof(CachingAttribute)) as CachingAttribute;
             //只有那些指定的才可以被缓存，需要验证
-            if (qCachingAttribute != null)
+            if (method.GetCustomAttributes(true).FirstOrDefault(p => p.GetType() == typeof(CachingAttribute)) is CachingAttribute qCachingAttribute)
             {
                 //获取自定义缓存键
                 var cacheKey = CustomCacheKey(invocation);
@@ -55,20 +54,24 @@ namespace CoreTemplate.Application.AOP.Memory
             var methodName = invocation.Method.Name;
             var methodArguments = invocation.Arguments.Select(GetArgumentValue).ToList();
 
-            string key = $"{typeName}:{methodName}:";
+            var key = $"{typeName}:{methodName}:";
             key += string.Join(":", methodArguments);
             return key;
         }
         //object 转 string
-        private string GetArgumentValue(object arg)
+        private static string GetArgumentValue(object arg)
         {
-            if (arg is int || arg is long || arg is string)
-                return arg.ToString();
-
-            if (arg is DateTime)
-                return ((DateTime)arg).ToString("yyyyMMddHHmmss");
-
-            return "";
+            switch (arg)
+            {
+                case int _:
+                case long _:
+                case string _:
+                    return arg.ToString();
+                case DateTime time:
+                    return time.ToString("yyyyMMddHHms");
+                default:
+                    return "";
+            }
         }
     }
 }

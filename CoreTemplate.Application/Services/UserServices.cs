@@ -14,43 +14,43 @@ namespace CoreTemplate.Application.Services
 {
     public class UserServices : BaseServices<User, UserDto, int>, IUserServices
     {
-        private readonly IRepository<User, int> _UserRepository;
-        private readonly IRepository<UserRole, int> _UserRoleRepository;
-        private readonly IRepository<Role, int> _RoleRepository;
+        private readonly IRepository<User, int> _userRepository;
+        private readonly IRepository<UserRole, int> _userRoleRepository;
+        private readonly IRepository<Role, int> _roleRepository;
 
-        public UserServices(IRepository<User, int> UserRepository, IRepository<UserRole, int> UserRoleRepository, IRepository<Role, int> RoleRepository,
-            IMapper Mapper) : base(UserRepository, Mapper)
+        public UserServices(IRepository<User, int> userRepository, IRepository<UserRole, int> userRoleRepository, IRepository<Role, int> roleRepository,
+            IMapper Mapper) : base(userRepository, Mapper)
         {
-            _UserRepository = UserRepository;
-            _UserRoleRepository = UserRoleRepository;
-            _RoleRepository = RoleRepository;
+            _userRepository = userRepository;
+            _userRoleRepository = userRoleRepository;
+            _roleRepository = roleRepository;
         }
 
         public async Task<List<User>> GetProcedureUserById(int id)
         {
-            var result = await _UserRepository.GetFromSql($@"CALL userbyid({0})").ToListAsync();
+            var result = await _userRepository.GetFromSql($@"CALL userbyid({0})").ToListAsync();
             return result;
         }
 
         [Caching]
         public User GetUserInfoByName(string name)
         {
-            var user = _UserRepository.FirstOrDefault(p => p.Name == name);
+            var user = _userRepository.FirstOrDefault(p => p.Name == name);
             return user;
         }
 
         public string GetUserRoleNameStr(string name, string pwd)
         {
-            var user = _UserRepository.FirstOrDefault(p => p.Name == name && p.PassWord == pwd);
+            var user = _userRepository.FirstOrDefault(p => p.Name == name && p.PassWord == pwd);
             if (user == null)
             {
                 return "";
             }
-            var userRole = _UserRoleRepository.GetAllList(p => p.UserId == user.Id);
+            var userRole = _userRoleRepository.GetAllList(p => p.UserId == user.Id);
             StringBuilder strB = new StringBuilder();
             foreach (var item in userRole)
             {
-                var role = _RoleRepository.FirstOrDefault(p => p.Id == item.RoleId);
+                var role = _roleRepository.FirstOrDefault(p => p.Id == item.RoleId);
                 if (role != null)
                 {
                     strB.Append(role.Name + ',');
@@ -66,20 +66,18 @@ namespace CoreTemplate.Application.Services
         /// <param name="userRegisterDto"></param>
         public void RegisterUser(UserRegisterDto userRegisterDto)
         {
-            var userInfo = _Mapper.Map<User>(userRegisterDto);
+            var userInfo = Mapper.Map<User>(userRegisterDto);
 
             userInfo.CreateDate = DateTimeOffset.Now.ToUnixTimeSeconds();
 
 
-            var user = _UserRepository.Insert(userInfo);
-            var role = _RoleRepository.FirstOrDefault(p => p.Name == "User");
+            var user = _userRepository.Insert(userInfo);
+            var role = _roleRepository.FirstOrDefault(p => p.Name == "User");
 
-            UserRole userRole = new UserRole();
+            UserRole userRole = new UserRole {RoleId = role.Id, UserId = user.Id};
 
-            userRole.RoleId = role.Id;
-            userRole.UserId = user.Id;
 
-            _UserRoleRepository.Insert(userRole);
+            _userRoleRepository.Insert(userRole);
         }
 
         public async Task<List<User>> TestSQLInjection(string name)
@@ -88,7 +86,7 @@ namespace CoreTemplate.Application.Services
             //var result = await _UserRepository.GetFromSql("SELECT * FROM USERS WHERE Name='" + name + "';").ToListAsync();
 
             //选择$进行字符串检查就不会导致SQL注入了
-            var result = await _UserRepository.GetFromSql($@"SELECT * FROM USERS WHERE Name='{name}';").ToListAsync();
+            var result = await _userRepository.GetFromSql($@"SELECT * FROM USERS WHERE Name='{name}';").ToListAsync();
             return result;
         }
     }

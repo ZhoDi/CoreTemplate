@@ -5,11 +5,11 @@ using System.Linq;
 
 namespace CoreTemplate.Application.AOP.Log
 {
-    public class LogAOP : IInterceptor
+    public class LogAop : IInterceptor
     {
         public void Intercept(IInvocation invocation)
         {
-            var dataIntercept = $"{DateTime.Now.ToString("yyyyMMddHHmmss")} " +
+            var dataIntercept = $"{DateTime.Now:yyyyMMddHHmmss} " +
                 $"执行方法：---{invocation.Method.Name}---" +
                 $"方法参数：---{string.Join("，", invocation.Arguments.Select(p => (p ?? "无参").ToString()).ToArray())}---\r\n";
             try

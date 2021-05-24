@@ -37,7 +37,7 @@ namespace CoreTemplate.Application.Helper
         /// </summary>
         /// <param name="sections"></param>
         /// <returns></returns>
-        public static string app(params string[] sections)
+        public static string App(params string[] sections)
         {
             try
             {
@@ -56,7 +56,7 @@ namespace CoreTemplate.Application.Helper
         /// <typeparam name="T"></typeparam>
         /// <param name="sections"></param>
         /// <returns></returns>
-        public static List<T> app<T>(params string[] sections)
+        public static List<T> App<T>(params string[] sections)
         {
             List<T> list = new List<T>();
             // 引用 Microsoft.Extensions.Configuration.Binder 包

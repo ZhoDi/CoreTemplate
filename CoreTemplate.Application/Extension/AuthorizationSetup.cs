@@ -22,13 +22,13 @@ namespace CoreTemplate.Application.Extension
             if (services == null) throw new ArgumentNullException(nameof(services));
 
             #region 令牌
-            var Issuer = Appsettings.app("Authentication", "JwtBearer", "Issuer");
-            var Audience = Appsettings.app("Authentication", "JwtBearer", "Audience");
+            var Issuer = Appsettings.App("Authentication", "JwtBearer", "Issuer");
+            var Audience = Appsettings.App("Authentication", "JwtBearer", "Audience");
             var token = new TokenValidationParameters
             {
                 // 秘钥
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Appsettings.app("Authentication", "JwtBearer", "SecurityKey"))),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Appsettings.App("Authentication", "JwtBearer", "SecurityKey"))),
                 // 发行人
                 ValidateIssuer = true,
                 ValidIssuer = Issuer,

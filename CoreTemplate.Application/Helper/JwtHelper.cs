@@ -15,7 +15,7 @@ namespace CoreTemplate.Application.Helper
     public class JwtHelper
     {
         /// <summary>
-        /// 根据传进来的TokenModel生成taokn字符串
+        /// 根据传进来的TokenModel生成token字符串
         /// </summary>
         /// <param name="tokenModel"></param>
         /// <returns></returns>
@@ -44,7 +44,7 @@ namespace CoreTemplate.Application.Helper
                 new Claim(JwtRegisteredClaimNames.Exp,new DateTimeOffset(time).AddDays(1).ToUnixTimeSeconds().ToString(),ClaimValueTypes.Integer64),
 
                 //jwt签发者
-                new Claim(JwtRegisteredClaimNames.Iss,Appsettings.app("Authentication:JwtBearer:Issuer")),
+                new Claim(JwtRegisteredClaimNames.Iss,Appsettings.App("Authentication:JwtBearer:Issuer")),
 
                 //jwt接收者
                 new Claim(JwtRegisteredClaimNames.Aud,config["Authentication:JwtBearer:Audience"])
@@ -81,7 +81,7 @@ namespace CoreTemplate.Application.Helper
         {
             var jwtHandler = new JwtSecurityTokenHandler();
             JwtSecurityToken jwtToken = jwtHandler.ReadJwtToken(jwtStr);
-            object role = new object();
+            object role;
             try
             {
                 jwtToken.Payload.TryGetValue(ClaimTypes.Role, out role);
@@ -91,6 +91,8 @@ namespace CoreTemplate.Application.Helper
                 Console.WriteLine(e);
                 throw;
             }
+
+            if (role == null) return new TokenModel();
             var tm = new TokenModel
             {
                 Uid = long.Parse(jwtToken.Id),

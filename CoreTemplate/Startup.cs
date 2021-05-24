@@ -72,10 +72,10 @@ namespace CoreTemplate
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseSwaggerMilddleware(()=> GetType().GetTypeInfo().Assembly.GetManifestResourceStream("CoreTemplate.wwwroot.swagger.ui.index.html"));
+            app.UseSwaggerMiddleware(()=> GetType().GetTypeInfo().Assembly.GetManifestResourceStream("CoreTemplate.wwwroot.swagger.ui.index.html"));
 
             //跨域
-            app.UseCors(Appsettings.app("Startup", "Cors", "PolicyName"));
+            app.UseCors(Appsettings.App("Startup", "Cors", "PolicyName"));
             // 使用静态文件
             app.UseStaticFiles();
             // 使用cookie

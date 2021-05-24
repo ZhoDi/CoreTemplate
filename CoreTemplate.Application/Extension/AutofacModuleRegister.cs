@@ -37,23 +37,23 @@ namespace CoreTemplate.Application.Extension
 
 
             var aopTypeList = new List<Type>();
-            if (Convert.ToBoolean(Appsettings.app("AOP", "LogAOP", "Enabled" )))
+            if (Convert.ToBoolean(Appsettings.App("AOP", "LogAop", "Enabled" )))
             {
                 //日志AOP
-                builder.RegisterType<LogAOP>();
-                aopTypeList.Add(typeof(LogAOP));
+                builder.RegisterType<LogAop>();
+                aopTypeList.Add(typeof(LogAop));
             }
-            if (Convert.ToBoolean(Appsettings.app("AOP", "MemoryCaching", "Enabled")))
+            if (Convert.ToBoolean(Appsettings.App("AOP", "MemoryCaching", "Enabled")))
             {
                 //缓存AOP
-                builder.RegisterType<MemoryCacheAOP>();
-                aopTypeList.Add(typeof(MemoryCacheAOP));
+                builder.RegisterType<MemoryCacheAop>();
+                aopTypeList.Add(typeof(MemoryCacheAop));
             }
-            if (Convert.ToBoolean(Appsettings.app("AOP", "RedisCatchAOP", "Enabled")))
+            if (Convert.ToBoolean(Appsettings.App("AOP", "RedisCatchAOP", "Enabled")))
             {
                 //Redis缓存AOP
-                builder.RegisterType<RedisCacheAOP>();
-                aopTypeList.Add(typeof(RedisCacheAOP));
+                builder.RegisterType<RedisCacheAop>();
+                aopTypeList.Add(typeof(RedisCacheAop));
             }
 
             //注册Application.Services中的对象,Services中的类要以Services结尾，否则注册失败

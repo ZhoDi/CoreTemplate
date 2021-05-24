@@ -18,10 +18,10 @@ namespace CoreTemplate.Application.Extension
 
             services.AddCors(options =>
             {
-                if (Appsettings.app("Startup", "Cors", "EnableAllIp").ObjToBool())
+                if (Appsettings.App("Startup", "Cors", "EnableAllIp").ObjToBool())
                 {
                     //允许任意跨域请求
-                    options.AddPolicy(Appsettings.app("Startup", "Cors", "PolicyName"),
+                    options.AddPolicy(Appsettings.App("Startup", "Cors", "PolicyName"),
                         build => build
                             .SetIsOriginAllowed((host) => true)
                             .AllowAnyMethod()
@@ -33,10 +33,10 @@ namespace CoreTemplate.Application.Extension
                 else
                 {
                     //指定IP跨域
-                    options.AddPolicy(Appsettings.app("Startup", "Cors", "PolicyName"),
+                    options.AddPolicy(Appsettings.App("Startup", "Cors", "PolicyName"),
                         build => build
                             .WithOrigins(
-                                Appsettings.app("Startup", "Cors", "CorsOrigins")
+                                Appsettings.App("Startup", "Cors", "CorsOrigins")
                                 .Split(',', StringSplitOptions.RemoveEmptyEntries)
                             )
                             .AllowAnyHeader()

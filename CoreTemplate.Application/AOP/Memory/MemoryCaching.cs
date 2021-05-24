@@ -8,7 +8,7 @@ namespace CoreTemplate.Application.AOP.Memory
         /// <summary>
         /// 实例化缓存接口ICaching
         /// </summary>
-        private IMemoryCache _cache;
+        private readonly IMemoryCache _cache;
         //还是通过构造函数的方法，获取
         public MemoryCaching(IMemoryCache cache)
         {

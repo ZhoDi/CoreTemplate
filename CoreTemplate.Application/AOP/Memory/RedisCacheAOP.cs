@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace CoreTemplate.Application.AOP.Memory
 {
-    public class RedisCacheAOP: IInterceptor
+    public class RedisCacheAop: IInterceptor
     {
-        private IRedisCacheManager _cache;
-        public RedisCacheAOP(IRedisCacheManager cache)
+        private readonly IRedisCacheManager _cache;
+        public RedisCacheAop(IRedisCacheManager cache)
         {
             _cache = cache;
         }
@@ -37,10 +37,10 @@ namespace CoreTemplate.Application.AOP.Memory
                         return;
                     }
                     object response;
-                    if (type != null && typeof(Task).IsAssignableFrom(type))
+                    if (typeof(Task).IsAssignableFrom(type))
                     {
                         //核心2：返回异步对象Task<T>
-                        if (resultTypes.Count() > 0)
+                        if (resultTypes.Length > 0)
                         {
                             var resultType = resultTypes.FirstOrDefault();
                             // 核心3，直接序列化成 dynamic 类型，之前我一直纠结特定的实体
@@ -73,7 +73,7 @@ namespace CoreTemplate.Application.AOP.Memory
 
                     //Type type = invocation.ReturnValue?.GetType();
                     var type = invocation.Method.ReturnType;
-                    if (type != null && typeof(Task).IsAssignableFrom(type))
+                    if (typeof(Task).IsAssignableFrom(type))
                     {
                         var resultProperty = type.GetProperty("Result");
                         response = resultProperty.GetValue(invocation.ReturnValue);
@@ -82,7 +82,7 @@ namespace CoreTemplate.Application.AOP.Memory
                     {
                         response = invocation.ReturnValue;
                     }
-                    if (response == null) response = string.Empty;
+                    response ??= string.Empty;
                     // 核心5：将获取到指定的response 和特性的缓存时间，进行set操作
                     _cache.Set(cacheKey, response, TimeSpan.FromSeconds(qCachingAttribute.AbsoluteExpiration));
                 }
@@ -100,21 +100,18 @@ namespace CoreTemplate.Application.AOP.Memory
             var methodName = invocation.Method.Name;
             var methodArguments = invocation.Arguments.Select(GetArgumentValue).ToList();
 
-            string key = $"{typeName}:{methodName}:";
+            var key = $"{typeName}:{methodName}:";
             key += string.Join(":", methodArguments);
 
             return key;
         }
         //object 转 string
-        private string GetArgumentValue(object arg)
+        private static string GetArgumentValue(object arg)
         {
             if (arg is int || arg is long || arg is string)
                 return arg.ToString();
 
-            if (arg is DateTime)
-                return ((DateTime)arg).ToString("yyyyMMddHHmmss");
-
-            return "";
+            return arg is DateTime time ? time.ToString("yyyyMMddHHms") : "";
         }
     }
 }

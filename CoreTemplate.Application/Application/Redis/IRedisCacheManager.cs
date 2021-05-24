@@ -6,7 +6,7 @@ namespace CoreTemplate.Application.Application.Redis
 {
     public interface IRedisCacheManager
     {
-        //获取 Reids 缓存值
+        //获取 Redis 缓存值
         string GetValue(string key);
 
         //获取值，并序列化

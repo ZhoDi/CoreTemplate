@@ -8,19 +8,19 @@ namespace CoreTemplate.Application.Application.Redis
 {
     public class RedisCacheManager:IRedisCacheManager
     {
-        private readonly string redisConnenctionString;
-        public volatile ConnectionMultiplexer redisConnection;
-        private static readonly object redisConnectionLock = new object();
+        private readonly string _redisConnectionString;
+        public volatile ConnectionMultiplexer RedisConnection;
+        private static readonly object RedisConnectionLock = new object();
         public RedisCacheManager()
         {
-            string redisConfiguration = Appsettings.app("AOP", "RedisCatchAOP", "ConnectionString");//获取连接字符串
+            string redisConfiguration = Appsettings.App("AOP", "RedisCatchAOP", "ConnectionString");//获取连接字符串
 
             if (string.IsNullOrWhiteSpace(redisConfiguration))
             {
                 throw new ArgumentException("redis config is empty", nameof(redisConfiguration));
             }
-            this.redisConnenctionString = redisConfiguration;
-            this.redisConnection = GetRedisConnection();
+            this._redisConnectionString = redisConfiguration;
+            this.RedisConnection = GetRedisConnection();
         }
 
         /// <summary>
@@ -31,19 +31,16 @@ namespace CoreTemplate.Application.Application.Redis
         private ConnectionMultiplexer GetRedisConnection()
         {
             //如果已经连接实例，直接返回
-            if (this.redisConnection == null || !this.redisConnection.IsConnected)
+            if (this.RedisConnection == null || !this.RedisConnection.IsConnected)
             {
                 //加锁，防止异步编程中，出现单例无效的问题
-                lock (redisConnectionLock)
+                lock (RedisConnectionLock)
                 {
-                    if (this.redisConnection != null)
-                    {
-                        //释放redis连接
-                        this.redisConnection.Dispose();
-                    }
+                    //释放redis连接
+                    RedisConnection?.Dispose();
                     try
                     {
-                        this.redisConnection = ConnectionMultiplexer.Connect(redisConnenctionString);
+                        this.RedisConnection = ConnectionMultiplexer.Connect(_redisConnectionString);
                     }
                     catch (Exception)
                     {
@@ -53,7 +50,7 @@ namespace CoreTemplate.Application.Application.Redis
                 }
             }
 
-            return this.redisConnection;
+            return this.RedisConnection;
         }
 
         public void Clear()
@@ -63,38 +60,30 @@ namespace CoreTemplate.Application.Application.Redis
                 var server = this.GetRedisConnection().GetServer(endPoint);
                 foreach (var key in server.Keys())
                 {
-                    redisConnection.GetDatabase().KeyDelete(key);
+                    RedisConnection.GetDatabase().KeyDelete(key);
                 }
             }
         }
 
         public bool Get(string key)
         {
-            return redisConnection.GetDatabase().KeyExists(key);
+            return RedisConnection.GetDatabase().KeyExists(key);
         }
 
         public string GetValue(string key)
         {
-            return redisConnection.GetDatabase().StringGet(key);
+            return RedisConnection.GetDatabase().StringGet(key);
         }
 
         public TEntity Get<TEntity>(string key)
         {
-            var value = redisConnection.GetDatabase().StringGet(key);
-            if (value.HasValue)
-            {
-                //需要用的反序列化，将Redis存储的Byte[]，进行反序列化
-                return SerializeHelper.Deserialize<TEntity>(value);
-            }
-            else
-            {
-                return default(TEntity);
-            }
+            var value = RedisConnection.GetDatabase().StringGet(key);
+            return value.HasValue ? SerializeHelper.Deserialize<TEntity>(value) : default(TEntity);
         }
 
         public void Remove(string key)
         {
-            redisConnection.GetDatabase().KeyDelete(key);
+            RedisConnection.GetDatabase().KeyDelete(key);
         }
 
         public void Set(string key, object value, TimeSpan cacheTime)
@@ -102,13 +91,13 @@ namespace CoreTemplate.Application.Application.Redis
             if (value != null)
             {
                 //序列化，将object值生成RedisValue
-                redisConnection.GetDatabase().StringSet(key, SerializeHelper.Serialize(value), cacheTime);
+                RedisConnection.GetDatabase().StringSet(key, SerializeHelper.Serialize(value), cacheTime);
             }
         }
 
         public bool SetValue(string key, byte[] value)
         {
-            return redisConnection.GetDatabase().StringSet(key, value, TimeSpan.FromSeconds(120));
+            return RedisConnection.GetDatabase().StringSet(key, value, TimeSpan.FromSeconds(120));
         }
     }
 }
