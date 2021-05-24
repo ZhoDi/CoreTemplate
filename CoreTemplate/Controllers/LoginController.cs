@@ -11,19 +11,19 @@ namespace CoreTemplate.Controllers
     [Route("api/[controller]")]
     public class LoginController : ControllerBase
     {
-        private readonly IUserServices _UserService;
+        private readonly IUserServices _userService;
 
-        public LoginController(IUserServices UserService)
+        public LoginController(IUserServices userService)
         {
-            _UserService = UserService;
+            _userService = userService;
         }
 
         [HttpPost("Authenticate")]
         public IActionResult GetToken([FromBody]AuthenticateModel model)
         {
             string jwtStr = string.Empty;
-            var userRole = _UserService.GetUserRoleNameStr(model.UserName, model.Password);
-            var userInfo = _UserService.GetUserInfoByName(model.UserName);
+            var userRole = _userService.GetUserRoleNameStr(model.UserName, model.Password);
+            var userInfo = _userService.GetUserInfoByName(model.UserName);
 
             if (!string.IsNullOrEmpty(userRole))
             {
@@ -58,24 +58,16 @@ namespace CoreTemplate.Controllers
             {
                 return BadRequest();
             }
-            _UserService.RegisterUser(userRegisterDto);
+            _userService.RegisterUser(userRegisterDto);
             return Ok();
         }
 
         [HttpGet("GetAllUser")]
         public IActionResult GetAllUser()
         {
-            var result = _UserService.GetAllList();
+            var result = _userService.GetAllList();
             return Ok(new { res = result });
         }
-
-        [HttpGet("GetUserById")]
-        public async Task<IActionResult> GetUserById(int id)
-        {
-            var result = await _UserService.GetProcedureUserById(id);
-            return Ok(new { res = result });
-        }
-
         /// <summary>
         /// 根据姓名获取用户信息(配置缓存)
         /// </summary>
@@ -84,19 +76,8 @@ namespace CoreTemplate.Controllers
         [HttpGet("GetUserByName")]
         public IActionResult GetUserById(string name)
         {
-            var result =  _UserService.GetUserInfoByName(name);
+            var result =  _userService.GetUserInfoByName(name);
             return Ok(new { res = result });
-        }
-
-        /// <summary>
-        /// 测试SQL注入
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("TestSQLInjection")]
-        public async Task<IActionResult> TestSQLInjection(string name)
-        {
-            var result = await _UserService.TestSQLInjection(name);
-            return Ok(new { res= result });
         }
     }
 }

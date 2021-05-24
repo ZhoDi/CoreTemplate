@@ -7,6 +7,7 @@ using CoreTemplate.Domain.IRepositories;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -26,12 +27,6 @@ namespace CoreTemplate.Application.Services
             _roleRepository = roleRepository;
         }
 
-        public async Task<List<User>> GetProcedureUserById(int id)
-        {
-            var result = await _userRepository.GetFromSql($@"CALL userbyid({0})").ToListAsync();
-            return result;
-        }
-
         [Caching]
         public User GetUserInfoByName(string name)
         {
@@ -48,13 +43,9 @@ namespace CoreTemplate.Application.Services
             }
             var userRole = _userRoleRepository.GetAllList(p => p.UserId == user.Id);
             StringBuilder strB = new StringBuilder();
-            foreach (var item in userRole)
+            foreach (var role in userRole.Select(item => _roleRepository.FirstOrDefault(p => p.Id == item.RoleId)).Where(role => role != null))
             {
-                var role = _roleRepository.FirstOrDefault(p => p.Id == item.RoleId);
-                if (role != null)
-                {
-                    strB.Append(role.Name + ',');
-                }
+                strB.Append(role.Name + ',');
             }
             //结尾有","在解析时注意
             return strB.ToString();
@@ -78,16 +69,6 @@ namespace CoreTemplate.Application.Services
 
 
             _userRoleRepository.Insert(userRole);
-        }
-
-        public async Task<List<User>> TestSQLInjection(string name)
-        {
-            //这种字符串插值方式会导致SQL注入
-            //var result = await _UserRepository.GetFromSql("SELECT * FROM USERS WHERE Name='" + name + "';").ToListAsync();
-
-            //选择$进行字符串检查就不会导致SQL注入了
-            var result = await _userRepository.GetFromSql($@"SELECT * FROM USERS WHERE Name='{name}';").ToListAsync();
-            return result;
         }
     }
 }

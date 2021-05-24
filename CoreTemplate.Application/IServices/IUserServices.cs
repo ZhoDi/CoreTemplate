@@ -14,9 +14,5 @@ namespace CoreTemplate.Application.IServices
         User GetUserInfoByName(string name);
 
         void RegisterUser(UserRegisterDto userRegisterDto);
-
-        Task<List<User>> GetProcedureUserById(int id);
-
-        Task<List<User>> TestSQLInjection(string name);
     }
 }
