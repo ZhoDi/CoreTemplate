@@ -8,6 +8,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using CoreTemplate.Domain.APIModel;
 
 namespace CoreTemplate.EntityFrameworkCore.Repositories
 {
@@ -15,7 +16,7 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
     {
 
         //定义数据访问上下文对象
-        protected readonly TempDbContext _dbContext;
+        protected readonly TempDbContext DbContext;
 
         /// <summary>
         /// 通过构造函数注入得到数据上下文对象实例
@@ -23,13 +24,13 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// <param name="dbContext"></param>
         public Repository(TempDbContext dbContext)
         {
-            _dbContext = dbContext;
+            DbContext = dbContext;
         }
 
         /// <summary>
         /// Gets DbSet for given entity.
         /// </summary>
-        public virtual DbSet<TEntity> Table => _dbContext.Set<TEntity>();
+        public virtual DbSet<TEntity> Table => DbContext.Set<TEntity>();
 
         #region Select
         /// <summary>
@@ -61,10 +62,7 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
 
             if (!propertySelectors.IsNullOrEmpty())
             {
-                foreach (var propertySelector in propertySelectors)
-                {
-                    query = query.Include(propertySelector);
-                }
+                query = propertySelectors.Aggregate(query, (current, propertySelector) => current.Include(propertySelector));
             }
             return query;
         }
@@ -80,10 +78,7 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
 
             if (!propertySelectors.IsNullOrEmpty())
             {
-                foreach (var propertySelector in propertySelectors)
-                {
-                    query = query.Include(propertySelector);
-                }
+                query = propertySelectors.Aggregate(query, (current, propertySelector) => current.Include(propertySelector));
             }
 
             return Task.FromResult(query);
@@ -104,7 +99,7 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// <returns></returns>
         public async Task<List<TEntity>> GetAllListAsync()
         {
-            return await GetAll().ToListAsync();
+            return await (await GetAllAsync()).ToListAsync();
         }
 
         /// <summary>
@@ -124,7 +119,7 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// <returns></returns>
         public async Task<List<TEntity>> GetAllListAsync(Expression<Func<TEntity, bool>> predicate)
         {
-            return await GetAll().Where(predicate).ToListAsync();
+            return await (await GetAllAsync()).Where(predicate).ToListAsync();
         }
 
         /// <summary>
@@ -144,7 +139,7 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// <returns></returns>
         public async Task<TEntity> FirstOrDefaultAsync(TPrimaryKey id)
         {
-            return await GetAll().FirstOrDefaultAsync(CreateEqualityExpressionForId(id));
+            return await (await GetAllAsync()).FirstOrDefaultAsync(CreateEqualityExpressionForId(id));
 
         }
 
@@ -165,37 +160,33 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// <returns></returns>
         public async Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate)
         {
-            return await GetAll().FirstOrDefaultAsync(predicate);
+            return await (await GetAllAsync()).FirstOrDefaultAsync(predicate);
         }
 
         /// <summary>
         /// 分页查询
         /// </summary>
-        /// <param name="whereExpression"></param>
         /// <param name="intPageIndex"></param>
         /// <param name="intPageSize"></param>
+        /// <param name="where"></param>
         /// <param name="order"></param>
         /// <param name="orderType"></param>
         /// <returns></returns>
         public PageModel<TEntity> GetPageList(int intPageIndex, int intPageSize, Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, object>> order, string orderType = "asc")
         {
             var result = GetAll().Where(where);
-            int totalCount = result.Count();
+            var totalCount = result.Count();
             if (order != null)
             {
-                if (orderType == "asc")
-                    result = result.OrderBy(order);
-                else
-                    result = result.OrderByDescending(order);
+                result = orderType == "asc" ? result.OrderBy(order) : result.OrderByDescending(order);
             }
             else
             {
                 result = result.OrderByDescending(m => m.Id);
             }
-            int pageCount = (int)Math.Ceiling((double)(totalCount / intPageSize));
-            var _list = result.Skip((intPageIndex - 1) * intPageSize).Take(intPageSize).ToList();
+            var list = result.Skip((intPageIndex - 1) * intPageSize).Take(intPageSize).ToList();
 
-            return new PageModel<TEntity>() { PageCount = pageCount, TotalCount = totalCount, TEntityList = _list, PageIndex = intPageIndex, PageSize = intPageSize };
+            return new PageModel<TEntity>() { TotalCount = totalCount, Items = list};
         }
 
         /// <summary>
@@ -209,20 +200,19 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// <returns></returns>
         public async Task<PageModel<TEntity>> GetPageListAsync(int intPageIndex, int intPageSize, Expression<Func<TEntity, bool>> whereExpression, Expression<Func<TEntity, object>> order, string orderType = "asc")
         {
-            var result = GetAll().Where(whereExpression);
-            int totalCount = result.Count();
+            var result = (await GetAllAsync()).Where(whereExpression);
+            var totalCount = result.Count();
             if (order != null)
             {
-                if (orderType == "asc")
+                if (orderType != null && orderType == "asc")
                     result = result.OrderBy(order);
                 else
                     result = result.OrderByDescending(order);
             }
 
-            int pageCount = (int)Math.Ceiling((double)(totalCount / intPageSize));
-            var _list = await result.Skip((intPageIndex - 1) * intPageSize).Take(intPageSize).ToListAsync();
+            var list = await result.Skip((intPageIndex - 1) * intPageSize).Take(intPageSize).ToListAsync();
 
-            return new PageModel<TEntity>() { PageCount = pageCount, TotalCount = totalCount, TEntityList = _list, PageIndex = intPageIndex, PageSize = intPageSize };
+            return new PageModel<TEntity>() {TotalCount = totalCount, Items = list};
         }
 
         /// <summary>
@@ -230,27 +220,22 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// </summary>
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
-        /// <param name="totalRecord"></param>
         /// <param name="sql"></param>
         /// <param name="order"></param>
         /// <param name="orderType"></param>
         /// <returns></returns>
-        public PageModel<TEntity> FindPageListFromSql(int intPageIndex, int intPageSize, string sql, Expression<Func<TEntity, object>> order, string orderType = "asc")
+        public PageModel<TEntity> FindPageListFromSql(int pageIndex, int pageSize, string sql, Expression<Func<TEntity, object>> order, string orderType = "asc")
         {
             var result = GetFromSql(sql);
 
             var totalCount = result.Count();
             if (order != null)
             {
-                if (orderType == "asc")
-                    result = result.OrderBy(order);
-                else
-                    result = result.OrderByDescending(order);
+                result = orderType == "asc" ? result.OrderBy(order) : result.OrderByDescending(order);
             }
-            int pageCount = (int)Math.Ceiling((double)(totalCount / intPageSize));
-            var _list = result.Skip((intPageIndex - 1) * intPageSize).Take(intPageSize).ToList();
+            var list = result.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
-            return new PageModel<TEntity>() { PageCount = pageCount, TotalCount = totalCount, PageIndex = intPageIndex, PageSize = intPageSize, TEntityList = _list };
+            return new PageModel<TEntity>() {  TotalCount = totalCount, Items = list };
         }
 
         /// <summary>
@@ -260,9 +245,9 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// <returns></returns>
         public IQueryable<TEntity> GetFromSql(string sql)
         {
-            var _list = Table.FromSqlRaw(sql);
+            var list = Table.FromSqlRaw(sql);
 
-            return _list;
+            return list;
         }
 
         #endregion
@@ -299,20 +284,20 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// <summary>
         /// 批量新增
         /// </summary>
-        /// <param name="entitys"></param>
-        public void BatchInsert(List<TEntity> entitys)
+        /// <param name="entities"></param>
+        public void BatchInsert(List<TEntity> entities)
         {
-            Table.AddRange(entitys);
+            Table.AddRange(entities);
             Save();
         }
 
         /// <summary>
         /// 批量新增
         /// </summary>
-        /// <param name="entitys"></param>
-        public async Task BatchInsertAsync(List<TEntity> entitys)
+        /// <param name="entities"></param>
+        public async Task BatchInsertAsync(List<TEntity> entities)
         {
-            await Table.AddRangeAsync(entitys);
+            await Table.AddRangeAsync(entities);
             await SaveAsync();
         }
 
@@ -325,7 +310,7 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         {
             // 发现并没什么用，先注释
             //AttachIfNot(entity);
-            _dbContext.Entry(entity).State = EntityState.Modified;
+            DbContext.Entry(entity).State = EntityState.Modified;
             if (autoSave)
                 Save();
             return entity;
@@ -416,7 +401,7 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         public void Delete(TEntity entity, bool autoSave = true)
         {
             //AttachIfNot(entity);
-            _dbContext.Entry(entity).State = EntityState.Deleted;
+            DbContext.Entry(entity).State = EntityState.Deleted;
             if (autoSave)
                 Save();
         }
@@ -449,12 +434,12 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// </summary>
         public void Save()
         {
-            _dbContext.SaveChanges();
+            DbContext.SaveChanges();
         }
 
         public async Task SaveAsync()
         {
-            await _dbContext.SaveChangesAsync();
+            await DbContext.SaveChangesAsync();
         }
 
         /// <summary>
@@ -464,7 +449,6 @@ namespace CoreTemplate.EntityFrameworkCore.Repositories
         /// <returns></returns>
         protected static Expression<Func<TEntity, bool>> CreateEqualityExpressionForId(TPrimaryKey id)
         {
-            ///简单方式
             ////参数
             //var lambdaParam = Expression.Parameter(typeof(TEntity));
             ////比较==

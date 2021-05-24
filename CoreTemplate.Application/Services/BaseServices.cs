@@ -12,18 +12,19 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using CoreTemplate.Domain.APIModel;
 
 namespace CoreTemplate.Application.Services
 {
-    public class BaseServices<TEntity, TDto, TPrimaryKey> : IBaseServices<TEntity, TDto, TPrimaryKey>
-        where TEntity : class, IEntity<TPrimaryKey>, new()
+    public class BaseServices<TEntity, TDto, TKey> : IBaseServices<TEntity, TDto, TKey>
+        where TEntity : class, IEntity<TKey>, new()
         where TDto : class
     {
 
-        public IRepository<TEntity, TPrimaryKey> Repository { get; set; }
+        public IRepository<TEntity, TKey> Repository { get; set; }
         public IMapper Mapper { get; set; }
 
-        protected BaseServices(IRepository<TEntity, TPrimaryKey> repository, IMapper mapper)
+        protected BaseServices(IRepository<TEntity, TKey> repository, IMapper mapper)
         {
             this.Repository = repository;
             this.Mapper = mapper;
@@ -46,7 +47,7 @@ namespace CoreTemplate.Application.Services
             return dtos;
         }
 
-        public PageModel<TDto> GetPageList(int startPage, int pageSize, System.Linq.Expressions.Expression<Func<TEntity, bool>> where, System.Linq.Expressions.Expression<Func<TEntity, object>> order, string orderType = "asc")
+        public PageModel<TDto> GetPageList(int startPage, int pageSize, Expression<Func<TEntity, bool>> where, System.Linq.Expressions.Expression<Func<TEntity, object>> order, string orderType = "asc")
         {
             var result = Repository.GetPageList(startPage, pageSize, where, order);
 
@@ -70,7 +71,7 @@ namespace CoreTemplate.Application.Services
             return dto;
         }
 
-        public TDto FirstOrDefault(TPrimaryKey id)
+        public TDto FirstOrDefault(TKey id)
         {
             var result = Repository.FirstOrDefault(id);
             var dtos = Mapper.Map<TDto>(result);
@@ -113,7 +114,7 @@ namespace CoreTemplate.Application.Services
             return dtos;
         }
 
-        public async Task<TDto> FirstOrDefaultAsync(TPrimaryKey id)
+        public async Task<TDto> FirstOrDefaultAsync(TKey id)
         {
             var result = await Repository.FirstOrDefaultAsync(id);
             var dtos = Mapper.Map<TDto>(result);

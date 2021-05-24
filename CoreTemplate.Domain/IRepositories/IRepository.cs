@@ -4,11 +4,12 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using CoreTemplate.Domain.APIModel;
 
 namespace CoreTemplate.Domain.IRepositories
 {
 
-    public interface IRepository<TEntity, TPrimaryKey> where TEntity : class, IEntity<TPrimaryKey>
+    public interface IRepository<TEntity, TKey> where TEntity : class, IEntity<TKey>
     {
         #region Select/Get/Query
         /// <summary>
@@ -62,14 +63,14 @@ namespace CoreTemplate.Domain.IRepositories
         /// </summary>
         /// <param name="id">实体主键</param>
         /// <returns></returns>
-        TEntity FirstOrDefault(TPrimaryKey id);
+        TEntity FirstOrDefault(TKey id);
 
         /// <summary>
         /// 根据主键获取实体
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<TEntity> FirstOrDefaultAsync(TPrimaryKey id);
+        Task<TEntity> FirstOrDefaultAsync(TKey id);
 
         /// <summary>
         /// 根据lambda表达式条件获取单个实体
@@ -136,8 +137,8 @@ namespace CoreTemplate.Domain.IRepositories
         /// <returns></returns>
         Task<TEntity> InsertAsync(TEntity entity, bool autoSave = true);
 
-        void BatchInsert(List<TEntity> entitys);
-        Task BatchInsertAsync(List<TEntity> entitys);
+        void BatchInsert(List<TEntity> entities);
+        Task BatchInsertAsync(List<TEntity> entities);
 
         /// <summary>
         /// 更新实体
@@ -179,13 +180,12 @@ namespace CoreTemplate.Domain.IRepositories
         /// </summary>
         /// <param name="id">实体主键</param>
         /// <param name="autoSave">是否立即执行保存</param>
-        void Delete(TPrimaryKey id, bool autoSave = true);
+        void Delete(TKey id, bool autoSave = true);
 
         /// <summary>
         /// 根据条件删除实体
         /// </summary>
         /// <param name="where">lambda表达式</param>
-        /// <param name="autoSave">是否自动保存</param>
         void Delete(Expression<Func<TEntity, bool>> where);
 
         /// <summary>
@@ -195,6 +195,7 @@ namespace CoreTemplate.Domain.IRepositories
         void DeleteRange(IQueryable<TEntity> entities);
 
         #endregion
+
         void Save();
         Task SaveAsync();
     }

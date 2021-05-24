@@ -6,10 +6,11 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using CoreTemplate.Domain.APIModel;
 
 namespace CoreTemplate.Application.IServices
 {
-    public interface IBaseServices<TEntity, TDto, TPrimaryKey>
+    public interface IBaseServices<TEntity, TDto, in TPrimaryKey>
         where TEntity : class, IEntity<TPrimaryKey>
         where TDto : class
     {

@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
-namespace CoreTemplate.Domain
+namespace CoreTemplate.Domain.APIModel
 {
-    public class PageModel<TEntity>
-        where TEntity : class
+    public class PageModel<T>
+        where T : class
     {
-        public int TotalCount { get; set; }
-        public int PageCount { get; set; }
-        public int PageIndex { get; set; }
-        public int PageSize { get; set; }
-        public List<TEntity> TEntityList { get; set; }
+        public long TotalCount { get; set; }
+        public List<T> Items { get; set; }
     }
 }
