@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Castle.Core.Internal;
 using CoreTemplate.Application.Helper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,7 +24,7 @@ namespace CoreTemplate.Extension
             #region 令牌
             var issuer = Appsettings.App("Authentication", "JwtBearer", "Issuer");
             var audience = Appsettings.App("Authentication", "JwtBearer", "Audience");
-            var token = new TokenValidationParameters
+            var tokenValidationParameters = new TokenValidationParameters
             {
                 // 秘钥
                 ValidateIssuerSigningKey = true,
@@ -44,19 +45,27 @@ namespace CoreTemplate.Extension
             };
             #endregion
 
-            //策略授权
+            #region 1.授权
+
             services.AddAuthorization(options =>
+                {
+                    options.AddPolicy("User", policy => policy.RequireRole("User").Build());
+                    options.AddPolicy("Admin", policy => policy.RequireRole("Admin").Build());
+                    options.AddPolicy("AdminOrUser", policy => policy.RequireRole("Admin", "User").Build());
+                });
+
+            #endregion
+
+            #region 2.认证
+
+            services.AddAuthentication(options =>
             {
-                options.AddPolicy("User", policy => policy.RequireRole("User").Build());
-                options.AddPolicy("Admin", policy => policy.RequireRole("Admin").Build());
-                options.AddPolicy("AdminOrUser", policy => policy.RequireRole("Admin", "User").Build());
-            }).AddAuthentication(options =>
-            {
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
             {
-                options.TokenValidationParameters = token;
+                options.TokenValidationParameters = tokenValidationParameters;
 
                 options.Events = new JwtBearerEvents
                 {
@@ -69,8 +78,8 @@ namespace CoreTemplate.Extension
                     },
                     OnAuthenticationFailed = context =>
                     {
-                        var token = context.Request.Headers["Authorization"].ObjToString().Replace("Bearer ", "");
-                        var jwtToken = (new JwtSecurityTokenHandler()).ReadJwtToken(token);
+                        var token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                        var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
 
                         if (jwtToken.Issuer != issuer)
                         {
@@ -90,6 +99,9 @@ namespace CoreTemplate.Extension
                     }
                 };
             });
+
+            #endregion
+
 
             //四种授权
             // 1、简单授权只需要在对应的上面加入对应的Role。例：[Authorize(Roles = "Admin,User")]
@@ -132,19 +144,14 @@ namespace CoreTemplate.Extension
             if (!context.HttpContext.Request.Path.HasValue ||
                 !context.HttpContext.Request.Path.Value.StartsWith("/signalr"))
             {
-                // We are just looking for signalr clients
                 return Task.CompletedTask;
             }
 
-            var qsAuthToken = context.HttpContext.Request.Query["enc_auth_token"].FirstOrDefault();
-            if (qsAuthToken == null)
+            var authToken = context.HttpContext.Request.Query["auth_token"];
+            if (!authToken.IsNullOrEmpty())
             {
-                // Cookie value does not matches to querystring value
-                return Task.CompletedTask;
+                context.Token = authToken;
             }
-
-            context.Token = qsAuthToken;
-
             return Task.CompletedTask;
         }
     }

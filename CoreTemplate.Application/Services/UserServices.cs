@@ -34,15 +34,15 @@ namespace CoreTemplate.Application.Services
             return user;
         }
 
-        public string GetUserRoleNameStr(string name, string pwd)
+        public string GetUserRoleNameStr(string loginId, string pwd)
         {
-            var user = _userRepository.FirstOrDefault(p => p.Name == name && p.PassWord == pwd);
+            var user = _userRepository.FirstOrDefault(p => p.LoginId == loginId && p.Password == pwd);
             if (user == null)
             {
                 return "";
             }
             var userRole = _userRoleRepository.GetAllList(p => p.UserId == user.Id);
-            StringBuilder strB = new StringBuilder();
+            var strB = new StringBuilder();
             foreach (var role in userRole.Select(item => _roleRepository.FirstOrDefault(p => p.Id == item.RoleId)).Where(role => role != null))
             {
                 strB.Append(role.Name + ',');
@@ -59,13 +59,13 @@ namespace CoreTemplate.Application.Services
         {
             var userInfo = Mapper.Map<User>(userRegisterDto);
 
-            userInfo.CreateDate = DateTimeOffset.Now.ToUnixTimeSeconds();
+            userInfo.CreateTime = DateTimeOffset.Now.ToUnixTimeSeconds();
 
 
             var user = _userRepository.Insert(userInfo);
             var role = _roleRepository.FirstOrDefault(p => p.Name == "User");
 
-            UserRole userRole = new UserRole {RoleId = role.Id, UserId = user.Id};
+            var userRole = new UserRole {RoleId = role.Id, UserId = user.Id};
 
 
             _userRoleRepository.Insert(userRole);

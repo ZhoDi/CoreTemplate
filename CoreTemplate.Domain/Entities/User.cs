@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace CoreTemplate.Domain.Entities
@@ -8,50 +9,45 @@ namespace CoreTemplate.Domain.Entities
     public class User : Entity<int>
     {
         /// <summary>
+        /// 用户登录Id
+        /// </summary>
+        [Column(TypeName = "varchar(10)")]
+        public string LoginId { get; set; }
+
+        /// <summary>
         /// 用户姓名
         /// </summary>
-        [MaxLength(20)]
+        [Column(TypeName = "varchar(10)")]
         public string Name { get; set; }
 
         /// <summary>
         /// 手机号
         /// </summary>
-        [MaxLength(15)]
+        [Column(TypeName = "varchar(20)")]
         public string Mobile { get; set; }
 
         /// <summary>
         /// 性别
         /// </summary>
+        [Column(TypeName = "int(1)")]
         public int Gender { get; set; }
 
         /// <summary>
         /// 邮箱
         /// </summary>
-        [MaxLength(30)]
+        [Column(TypeName = "varchar(20)")]
         public string Email { get; set; }
 
         /// <summary>
         /// 头像url
         /// </summary>
+        [Column(TypeName = "varchar(50)")]
         public string Avatar { get; set; }
 
         /// <summary>
-        /// 工号
+        /// 密码
         /// </summary>
-        [MaxLength(20)]
-        public string Number { get; set; }
-
-        [MaxLength(20)]
-        public string PassWord { get; set; }
-
-        /// <summary>
-        /// 创建时间
-        /// </summary>
-        public long CreateDate { get; set; }
-
-        /// <summary>
-        /// 是否注销
-        /// </summary>
-        public bool IsDeleted { get; set; }
+        [Column(TypeName = "varchar(20)")]
+        public string Password { get; set; }
     }
 }

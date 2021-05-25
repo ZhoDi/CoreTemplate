@@ -12,6 +12,41 @@ namespace CoreTemplate.Domain
         public virtual TPrimaryKey Id { get; set; }
 
         /// <summary>
+        /// 创建人Id
+        /// </summary>
+        public long CreateUser { get; set; }
+
+        /// <summary>
+        /// 创建人姓名
+        /// </summary>
+        public string CreateUserName { get; set; }
+
+        /// <summary>
+        /// 创建时间
+        /// </summary>
+        public long CreateTime { get; set; }
+
+        /// <summary>
+        /// 修改人Id
+        /// </summary>
+        public long? UpdateUser { get; set; }
+
+        /// <summary>
+        /// 修改人姓名
+        /// </summary>
+        public string UpdateUserName { get; set; }
+
+        /// <summary>
+        /// 修改时间
+        /// </summary>
+        public long? UpdateTime { get; set; }
+
+        /// <summary>
+        /// 是否删除
+        /// </summary>
+        public bool IsDeleted { get; set; } = false;
+
+        /// <summary>
         /// Checks if this entity is transient (it has not an Id).
         /// </summary>
         /// <returns>True, if this entity is transient</returns>

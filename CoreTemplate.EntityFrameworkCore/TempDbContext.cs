@@ -39,6 +39,9 @@ namespace CoreTemplate.EntityFrameworkCore
             //配置查询过滤器
             builder.Entity<User>().Property<bool>("IsDeleted");
             builder.Entity<Role>().Property<bool>("IsDeleted");
+
+            builder.Entity<User>()
+                .HasIndex(p => new { p.IsDeleted, p.LoginId, p.Mobile });
         }
     }
 }

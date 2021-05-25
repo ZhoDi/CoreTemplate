@@ -23,8 +23,8 @@ namespace CoreTemplate.Controllers
         public BaseResponse<AuthenticateResultModel> GetToken([FromBody]AuthenticateModel model)
         {
             string jwtStr = string.Empty;
-            var userRole = _userService.GetUserRoleNameStr(model.UserName, model.Password);
-            var userInfo = _userService.GetUserInfoByName(model.UserName);
+            var userRole = _userService.GetUserRoleNameStr(model.LoginId, model.Password);
+            var userInfo = _userService.GetUserInfoByName(model.LoginId);
 
             if (!string.IsNullOrEmpty(userRole))
             {
@@ -39,7 +39,7 @@ namespace CoreTemplate.Controllers
             var res = new AuthenticateResultModel
             {
                 AccessToken = jwtStr,
-                ExpireInSeconds = (int)TimeSpan.FromDays(1).TotalSeconds,
+                ExpireInSeconds = JwtHelper.SerializeJwt(jwtStr).Expiration,
                 UserId = userInfo.Id
             };
 

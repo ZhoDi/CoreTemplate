@@ -14,41 +14,67 @@ namespace CoreTemplate.EntityFrameworkCore.Seed
         public void Create(TempDbContext dbContext)
         {
 
-            var adminRoleForHost = dbContext.Roles.ToList();
-            var roleForAdmin = new Role();
-            var roleForUser = new Role();
+            var users = dbContext.Users.ToList();
 
-            if (!adminRoleForHost.Any())
+            if (users.Any()) return;
+            var roleForAdmin = dbContext.Roles.Add(new Role()
             {
-                roleForAdmin = dbContext.Roles.Add(new Role() { Name = ConstName.Admin, IsDeleted = false, CreateDate = DateTimeOffset.Now.ToUnixTimeSeconds() }).Entity;
+                Name = ConstName.Admin, 
+                IsDeleted = false, 
+                CreateTime = DateTimeOffset.Now.ToUnixTimeSeconds(),
+                CreateUser = 1,
+                CreateUserName = ConstName.Admin
+            }).Entity;
 
-                roleForUser = dbContext.Roles.Add(new Role() { Name = ConstName.User, IsDeleted = false, CreateDate = DateTimeOffset.Now.ToUnixTimeSeconds() }).Entity;
+            var roleForUser = dbContext.Roles.Add(new Role()
+            {
+                Name = ConstName.User,
+                IsDeleted = false,
+                CreateTime = DateTimeOffset.Now.ToUnixTimeSeconds(),
+                CreateUser = 1,
+                CreateUserName = ConstName.Admin,
+            }).Entity;
 
-                var adminUserForHost = dbContext.Users.IgnoreQueryFilters().FirstOrDefault(u => u.Name == ConstName.Admin);
-                if (adminUserForHost == null)
+            var adminUserForHost = dbContext.Users.IgnoreQueryFilters().FirstOrDefault(u => u.Name == ConstName.Admin);
+            if (adminUserForHost == null)
+            {
+                var user = new User
                 {
-                    var user = new User
-                    {
-                        Name = ConstName.Admin,
-                        Email = "910824572@qq.com",
-                        Mobile = "15737652771",
-                        IsDeleted = false,
-                        Avatar = "",
-                        PassWord = "123456",
-                        Gender = 1,
-                        Number = "1011150",
-                    };
+                    LoginId = ConstName.Admin,
+                    Name = ConstName.Admin,
+                    Email = "910824572@qq.com",
+                    Mobile = "15737652771",
+                    IsDeleted = false,
+                    CreateUser = 1,
+                    CreateUserName = ConstName.Admin,
+                    CreateTime = DateTimeOffset.Now.ToUnixTimeSeconds(),
+                    Avatar = "",
+                    Password = "123456",
+                    Gender = 1
+                };
 
-                    adminUserForHost = dbContext.Users.Add(user).Entity;
-                    dbContext.SaveChanges();
-
-
-                    //// 分配管理员角色
-                    dbContext.UserRoles.Add(new UserRole() { UserId = adminUserForHost.Id, RoleId = roleForAdmin.Id });
-                    dbContext.UserRoles.Add(new UserRole() { UserId = adminUserForHost.Id, RoleId = roleForUser.Id });
-                }
+                adminUserForHost = dbContext.Users.Add(user).Entity;
                 dbContext.SaveChanges();
+
+                //// 分配管理员角色
+                dbContext.UserRoles.Add(new UserRole()
+                {
+                    UserId = adminUserForHost.Id, 
+                    RoleId = roleForAdmin.Id,
+                    CreateUser = 1,
+                    CreateUserName = ConstName.Admin,
+                    CreateTime = DateTimeOffset.Now.ToUnixTimeSeconds(),
+                });
+                dbContext.UserRoles.Add(new UserRole()
+                {
+                    UserId = adminUserForHost.Id, 
+                    RoleId = roleForUser.Id,
+                    CreateUser = 1,
+                    CreateUserName = ConstName.Admin,
+                    CreateTime = DateTimeOffset.Now.ToUnixTimeSeconds(),
+                });
             }
+            dbContext.SaveChanges();
         }
     }
 }

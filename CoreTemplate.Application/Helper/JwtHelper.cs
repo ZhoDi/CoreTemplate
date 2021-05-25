@@ -21,16 +21,6 @@ namespace CoreTemplate.Application.Helper
         /// <returns></returns>
         public static string IssueJwt(TokenModel tokenModel)
         {
-            //通过ConfigurationBuilder获取json配置
-            var config = new ConfigurationBuilder()
-               //将配置文件的数据加载到内存中
-               .AddInMemoryCollection()
-               //指定配置文件所在的目录
-               .SetBasePath(Directory.GetCurrentDirectory())
-               //指定加载的配置文件
-               .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-               //编译成对象
-               .Build();
             var time = DateTime.Now;
             var claims = new List<Claim>
             {
@@ -47,23 +37,20 @@ namespace CoreTemplate.Application.Helper
                 new Claim(JwtRegisteredClaimNames.Iss,Appsettings.App("Authentication:JwtBearer:Issuer")),
 
                 //jwt接收者
-                new Claim(JwtRegisteredClaimNames.Aud,config["Authentication:JwtBearer:Audience"])
+                new Claim(JwtRegisteredClaimNames.Aud,Appsettings.App("Authentication:JwtBearer:Audience"))
             };
 
             //一个用户多个角色,StringSplitOptions.RemoveEmptyEntries用以去除最后一个空数据(示例数据  Admin,User,  最后有,)
             claims.AddRange(tokenModel.Role.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => new Claim(ClaimTypes.Role, s)));
 
             //秘钥
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Authentication:JwtBearer:SecurityKey"]));
-
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Appsettings.App("Authentication:JwtBearer:SecurityKey")));
             //加密
             var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var jwt = new JwtSecurityToken(
                 //上面生命的"身份单元集合"相当于身份证上的姓名,性别...等基本信息
                 claims: claims,
-
-                //凭证
                 signingCredentials: cred);
 
             //生成JWT字符串
@@ -81,22 +68,13 @@ namespace CoreTemplate.Application.Helper
         {
             var jwtHandler = new JwtSecurityTokenHandler();
             var jwtToken = jwtHandler.ReadJwtToken(jwtStr);
-            object role;
-            try
-            {
-                jwtToken.Payload.TryGetValue(ClaimTypes.Role, out role);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
-
-            if (role == null) return new TokenModel();
+            jwtToken.Payload.TryGetValue(ClaimTypes.Role, out var role);
+            jwtToken.Payload.TryGetValue(JwtRegisteredClaimNames.Exp, out var exp);
             var tm = new TokenModel
             {
                 Uid = long.Parse(jwtToken.Id),
-                Role = role.ToString()
+                Role = role != null ? role.ToString() : "",
+                Expiration = exp != null ? Convert.ToInt64(exp) : 0
             };
             return tm;
         }
@@ -115,5 +93,10 @@ namespace CoreTemplate.Application.Helper
         /// 角色
         /// </summary>
         public string Role { get; set; }
+
+        /// <summary>
+        /// 过期时间
+        /// </summary>
+        public long Expiration { get; set; }
     }
 }

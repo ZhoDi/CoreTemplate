@@ -38,11 +38,12 @@ namespace CoreTemplate.Extension
                 options.OperationFilter<SecurityRequirementsOperationFilter>();
                 options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
                 {
-                    Description = "JWT授权直接在下框中输入Bearer {token},空格不可省略",
+                    Description = "JWT授权点击登录输入用户名密码",
                     Name = "Authorization",//jwt默认的参数名称
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.ApiKey
                 });
+
             });
         }
     }

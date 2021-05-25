@@ -8,7 +8,7 @@ namespace CoreTemplate.Domain.APIModel.User
     public class AuthenticateModel
     {
         [Required]
-        public string UserName { get; set; }
+        public string LoginId { get; set; }
 
         [Required]
         public string Password { get; set; }

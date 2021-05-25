@@ -29,7 +29,7 @@ namespace CoreTemplate.Extension
             builder.RegisterType<Mapper>().As<IMapper>().SingleInstance();
 
             builder.RegisterType<MemoryCaching>().As<ICaching>().InstancePerLifetimeScope();
-            builder.RegisterType<RedisCacheManager>().As<IRedisCacheManager>().SingleInstance();
+            builder.RegisterType<RedisCacheManager>().As<IRedisCacheManager>().InstancePerLifetimeScope();
 
             //builder.RegisterType<AutoMapperObjectMapper>().As<Application.Application.IObjectMapper>().InstancePerDependency();
             //builder.Register<IMapper>(ctx => new Mapper(ctx.Resolve<IConfigurationProvider>(), ctx.Resolve)).InstancePerDependency();

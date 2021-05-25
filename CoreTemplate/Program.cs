@@ -18,7 +18,7 @@ namespace CoreTemplate
             {
                 webBuilder
                 .UseStartup<Startup>()
-                .UseUrls("http://*:8081");
+                .UseUrls("http://*:80");
             });
     }
 }

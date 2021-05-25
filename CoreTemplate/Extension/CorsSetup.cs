@@ -15,7 +15,7 @@ namespace CoreTemplate.Extension
 
             services.AddCors(options =>
             {
-                if (Appsettings.App("Startup", "Cors", "EnableAllIp").ObjToBool())
+                if (Convert.ToBoolean((Appsettings.App("Startup", "Cors", "EnableAllIp"))))
                 {
                     //允许任意跨域请求
                     options.AddPolicy(Appsettings.App("Startup", "Cors", "PolicyName"),

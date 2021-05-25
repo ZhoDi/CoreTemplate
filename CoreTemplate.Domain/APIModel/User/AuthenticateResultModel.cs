@@ -10,7 +10,7 @@ namespace CoreTemplate.Domain.APIModel.User
 
         //public string EncryptedAccessToken { get; set; }
 
-        public int ExpireInSeconds { get; set; }//有效期
+        public long ExpireInSeconds { get; set; }//有效期
 
         public long UserId { get; set; }//用户ID
     }

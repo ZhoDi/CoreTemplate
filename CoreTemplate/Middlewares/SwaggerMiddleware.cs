@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Microsoft.AspNetCore.Builder;
+using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace CoreTemplate.Middlewares
 {
@@ -16,6 +17,7 @@ namespace CoreTemplate.Middlewares
             {
                 app.UseSwaggerUI(options =>
                 {
+                    options.DocExpansion(DocExpansion.None);
                     options.SwaggerEndpoint("/swagger/v1/swagger.json", "CoreTemplate API v1");
                     var basePath = AppContext.BaseDirectory;
                     //var index = new FileStream(Path.Combine(basePath + @"/wwwroot/swagger/ui/index.html"), FileMode.Open);

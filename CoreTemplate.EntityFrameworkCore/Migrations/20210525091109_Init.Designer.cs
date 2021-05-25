@@ -3,14 +3,16 @@ using System;
 using CoreTemplate.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CoreTemplate.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(TempDbContext))]
-    partial class TempDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210525091109_Init")]
+    partial class Init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
