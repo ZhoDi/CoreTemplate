@@ -1,4 +1,5 @@
-﻿namespace CoreTemplate.Application.Dto.Base
+﻿
+namespace CoreTemplate.Application.Model.Base
 {
     public abstract class Dto<TPrimaryKey> :IDto<TPrimaryKey>
     {

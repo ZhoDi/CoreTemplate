@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using System;
 
-namespace CoreTemplate.Application.AOP.Memory
+namespace CoreTemplate.Application.Aop.Memory
 {
     public class MemoryCaching : ICaching
     {

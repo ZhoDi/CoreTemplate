@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
-using CoreTemplate.Application.Dto.Base;
-using CoreTemplate.Application.Dto.User;
-using CoreTemplate.Application.Helper;
 using CoreTemplate.Application.IServices;
+using CoreTemplate.Application.Model.Base;
+using CoreTemplate.Application.Model.User.Dto;
 using CoreTemplate.Domain.APIModel.User;
+using CoreTemplate.Domain.Shared.Helper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoreTemplate.Controllers

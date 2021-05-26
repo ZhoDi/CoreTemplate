@@ -1,8 +1,8 @@
-﻿using CoreTemplate.Application.Helper;
-using StackExchange.Redis;
+﻿using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using CoreTemplate.Domain.Shared.Helper;
 
 namespace CoreTemplate.Application.Application.Redis
 {

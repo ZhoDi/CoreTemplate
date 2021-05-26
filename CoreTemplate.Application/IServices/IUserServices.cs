@@ -1,10 +1,10 @@
-﻿using CoreTemplate.Application.Dto.User;
-using CoreTemplate.Domain.Entities;
+﻿using CoreTemplate.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using CoreTemplate.Application.Dto.Base;
+using CoreTemplate.Application.Model.Base;
+using CoreTemplate.Application.Model.User.Dto;
 
 namespace CoreTemplate.Application.IServices
 {

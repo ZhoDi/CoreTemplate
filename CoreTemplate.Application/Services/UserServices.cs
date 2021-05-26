@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
-using CoreTemplate.Application.Dto.User;
 using CoreTemplate.Application.IServices;
-using CoreTemplate.Application.TemplateAttribute;
 using CoreTemplate.Domain.Entities;
 using CoreTemplate.Domain.IRepositories;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CoreTemplate.Application.Dto.Base;
+using CoreTemplate.Application.Model.Base;
+using CoreTemplate.Application.Model.User.Dto;
+using CoreTemplate.Domain.Shared.Attribute;
 
 namespace CoreTemplate.Application.Services
 {

@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using System.Linq;
 
-namespace CoreTemplate.Application.AOP.Log
+namespace CoreTemplate.Application.Aop.Log
 {
     public class LogAop : IInterceptor
     {

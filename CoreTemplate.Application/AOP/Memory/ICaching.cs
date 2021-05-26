@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CoreTemplate.Application.AOP.Memory
+namespace CoreTemplate.Application.Aop.Memory
 {
     public interface ICaching
     {

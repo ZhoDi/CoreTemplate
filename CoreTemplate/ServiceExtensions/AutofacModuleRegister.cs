@@ -4,11 +4,11 @@ using System.Reflection;
 using Autofac;
 using Autofac.Extras.DynamicProxy;
 using AutoMapper;
-using CoreTemplate.Application.AOP.Log;
-using CoreTemplate.Application.AOP.Memory;
+using CoreTemplate.Application.Aop.Log;
+using CoreTemplate.Application.Aop.Memory;
 using CoreTemplate.Application.Application.Redis;
-using CoreTemplate.Application.Helper;
 using CoreTemplate.Domain.IRepositories;
+using CoreTemplate.Domain.Shared.Helper;
 using CoreTemplate.EntityFrameworkCore.Repositories;
 
 namespace CoreTemplate.ServiceExtensions

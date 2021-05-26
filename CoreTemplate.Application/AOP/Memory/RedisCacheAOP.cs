@@ -1,11 +1,11 @@
 ﻿using Castle.DynamicProxy;
 using CoreTemplate.Application.Application.Redis;
-using CoreTemplate.Application.TemplateAttribute;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using CoreTemplate.Domain.Shared.Attribute;
 
-namespace CoreTemplate.Application.AOP.Memory
+namespace CoreTemplate.Application.Aop.Memory
 {
     public class RedisCacheAop: IInterceptor
     {

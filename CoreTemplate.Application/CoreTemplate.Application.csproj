@@ -14,4 +14,8 @@
     <ProjectReference Include="..\CoreTemplate.EntityFrameworkCore\CoreTemplate.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Model\User\Param\" />
+  </ItemGroup>
+
 </Project>

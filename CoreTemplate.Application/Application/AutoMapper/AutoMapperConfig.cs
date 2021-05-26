@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using CoreTemplate.Application.Application.AutoMapper;
 
 namespace CoreTemplate.Application.AutoMapper
 {

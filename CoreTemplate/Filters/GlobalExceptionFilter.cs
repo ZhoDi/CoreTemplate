@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CoreTemplate.Application.Dto.Base;
+using CoreTemplate.Application.Model.Base;
 using CoreTemplate.Domain.Shared.Enum;
 using CoreTemplate.Domain.Shared.Exception;
 using Microsoft.AspNetCore.Mvc;

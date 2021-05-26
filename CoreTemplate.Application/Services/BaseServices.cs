@@ -1,7 +1,6 @@
 ﻿using Autofac;
 using AutoMapper;
 using CoreTemplate.Application.Application;
-using CoreTemplate.Application.Dto.User;
 using CoreTemplate.Application.IServices;
 using CoreTemplate.Domain;
 using CoreTemplate.Domain.IRepositories;

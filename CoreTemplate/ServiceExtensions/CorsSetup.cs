@@ -1,5 +1,5 @@
 ﻿using System;
-using CoreTemplate.Application.Helper;
+using CoreTemplate.Domain.Shared.Helper;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CoreTemplate.ServiceExtensions

@@ -1,4 +1,4 @@
-﻿namespace CoreTemplate.Application.Dto.Base
+﻿namespace CoreTemplate.Application.Model.Base
 {
     public interface IDto<TPrimaryKey>
     {

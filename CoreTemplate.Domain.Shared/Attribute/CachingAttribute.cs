@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace CoreTemplate.Application.TemplateAttribute
+namespace CoreTemplate.Domain.Shared.Attribute
 {
     [AttributeUsage(AttributeTargets.Method, Inherited = true)]
-    public class CachingAttribute:Attribute
+    public class CachingAttribute:System.Attribute
     {
         //缓存绝对过期时间
         public int AbsoluteExpiration { get; set; } = 30;

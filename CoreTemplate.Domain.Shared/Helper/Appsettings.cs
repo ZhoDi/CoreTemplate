@@ -1,12 +1,9 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
-namespace CoreTemplate.Application.Helper
+namespace CoreTemplate.Domain.Shared.Helper
 {
     public class Appsettings
     {
@@ -46,7 +43,7 @@ namespace CoreTemplate.Application.Helper
                     return Configuration[string.Join(":", sections)];
                 }
             }
-            catch (Exception) { Console.WriteLine("Appsetting.json读取报错"); }
+            catch (System.Exception) { Console.WriteLine("Appsetting.json读取报错"); }
             return "";
         }
 

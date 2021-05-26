@@ -4,7 +4,7 @@ using System.Text;
 using CoreTemplate.Domain.Shared.Enum;
 using EnumsNET;
 
-namespace CoreTemplate.Application.Dto.Base
+namespace CoreTemplate.Application.Model.Base
 {
     /// <summary>
     /// 基础返回结果(不返回数据)

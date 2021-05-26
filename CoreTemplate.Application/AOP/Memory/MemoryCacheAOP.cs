@@ -1,9 +1,9 @@
 ﻿using Castle.DynamicProxy;
-using CoreTemplate.Application.TemplateAttribute;
 using System;
 using System.Linq;
+using CoreTemplate.Domain.Shared.Attribute;
 
-namespace CoreTemplate.Application.AOP.Memory
+namespace CoreTemplate.Application.Aop.Memory
 {
     public class MemoryCacheAop : IInterceptor
     {
