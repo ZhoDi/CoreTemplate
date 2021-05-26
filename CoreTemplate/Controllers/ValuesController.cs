@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CoreTemplate.Application.Model.Base;
+using CoreTemplate.Application.Model.Test.Param;
 using CoreTemplate.Domain.Shared.Enum;
 using CoreTemplate.Domain.Shared.Exception;
 using Microsoft.AspNetCore.Authorization;
@@ -26,7 +27,16 @@ namespace CoreTemplate.Controllers
         public BaseResponse<string> HttpGet()
         {
             throw new BaseException("错误",DetailedStatus.DataAlreadyExists);
-            return new BaseResponse<string>("value");
+        }
+
+        /// <summary>
+        /// GET api/values
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public BaseResponse<string> HttpPost(ValueParam param)
+        {
+            return new BaseResponse<string>("post");
         }
     }
 }

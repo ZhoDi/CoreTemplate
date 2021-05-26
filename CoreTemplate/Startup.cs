@@ -15,6 +15,8 @@ using CoreTemplate.Domain.Shared.Helper;
 using CoreTemplate.Filters;
 using CoreTemplate.Middlewares;
 using CoreTemplate.ServiceExtensions;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 namespace CoreTemplate
 {
@@ -46,10 +48,17 @@ namespace CoreTemplate
             //services.AddScoped<IUserServices, UserServices>();
             #endregion
 
+            //1.开启允许同步IO
+            //2.关闭自带模型验证,在
+            services.Configure<KestrelServerOptions>(o => o.AllowSynchronousIO = true)
+                //.Configure<IISServerOptions>(o => o.AllowSynchronousIO = true)
+                .Configure<ApiBehaviorOptions>(o => o.SuppressModelStateInvalidFilter = true);
+
             services.AddControllers(o =>
                 {
                     // 全局异常过滤
                     o.Filters.Add(typeof(GlobalExceptionFilter));
+                    o.Filters.Add(typeof(GlobalRequestFilter));
                 })
                 .AddNewtonsoftJson(options =>
                 {
@@ -62,6 +71,7 @@ namespace CoreTemplate
                     ////设置时间格式
                     //options.SerializerSettings.DateFormatString = "yyyy-MM-dd";
                 });
+
         }
 
 

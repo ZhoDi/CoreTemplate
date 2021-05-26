@@ -15,6 +15,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:CoreTemplate.Controllers.ValuesController.HttpPost(CoreTemplate.Application.Model.Test.Param.ValueParam)">
+            <summary>
+            GET api/values
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:CoreTemplate.Filters.GlobalExceptionFilter">
             <summary>
             全局异常处理
@@ -27,6 +33,11 @@
             <param name="throwMsg"></param>
             <param name="ex"></param>
             <returns></returns>
+        </member>
+        <member name="T:CoreTemplate.Filters.GlobalRequestFilter">
+            <summary>
+            全局请求过滤器
+            </summary>
         </member>
         <member name="T:CoreTemplate.Middlewares.SwaggerMiddleware">
             <summary>
