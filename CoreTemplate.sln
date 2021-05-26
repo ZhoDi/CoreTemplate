@@ -11,6 +11,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreTemplate.Domain", "Core
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreTemplate.EntityFrameworkCore", "CoreTemplate.EntityFrameworkCore\CoreTemplate.EntityFrameworkCore.csproj", "{FAD62DA3-543D-42FF-A12C-DBE0BFA667BF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreTemplate.Domain.Shared", "CoreTemplate.Domain.Shared\CoreTemplate.Domain.Shared.csproj", "{FCF3A3AB-54CF-452B-AEFA-662F23A9AF68}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{2A017C55-F687-47AA-951C-480E20AB5AF4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,9 +37,20 @@ Global
 		{FAD62DA3-543D-42FF-A12C-DBE0BFA667BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FAD62DA3-543D-42FF-A12C-DBE0BFA667BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FAD62DA3-543D-42FF-A12C-DBE0BFA667BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FCF3A3AB-54CF-452B-AEFA-662F23A9AF68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCF3A3AB-54CF-452B-AEFA-662F23A9AF68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCF3A3AB-54CF-452B-AEFA-662F23A9AF68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCF3A3AB-54CF-452B-AEFA-662F23A9AF68}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D5F6C07D-381E-4196-BF1A-98205F24BD4F} = {2A017C55-F687-47AA-951C-480E20AB5AF4}
+		{DD472CF0-E14C-4E04-B397-B690A661F6F1} = {2A017C55-F687-47AA-951C-480E20AB5AF4}
+		{B630534F-6285-4A2D-9507-7129DAD6DF8C} = {2A017C55-F687-47AA-951C-480E20AB5AF4}
+		{FAD62DA3-543D-42FF-A12C-DBE0BFA667BF} = {2A017C55-F687-47AA-951C-480E20AB5AF4}
+		{FCF3A3AB-54CF-452B-AEFA-662F23A9AF68} = {2A017C55-F687-47AA-951C-480E20AB5AF4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D0FF31BD-366F-474C-AFE2-ABECEBD97F44}

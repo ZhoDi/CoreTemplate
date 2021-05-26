@@ -13,6 +13,7 @@ using CoreTemplate.Application.Helper;
 using System.Linq;
 using System.Reflection;
 using CoreTemplate.Extension;
+using CoreTemplate.Filters;
 using CoreTemplate.Middlewares;
 
 namespace CoreTemplate
@@ -45,9 +46,13 @@ namespace CoreTemplate
             //services.AddScoped<IUserServices, UserServices>();
             #endregion
 
-            services.AddControllers()
-                    .AddNewtonsoftJson(options =>
-                    {
+            services.AddControllers(o =>
+                {
+                    // 全局异常过滤
+                    o.Filters.Add(typeof(GlobalExceptionFilter));
+                })
+                .AddNewtonsoftJson(options =>
+                {
                     ////忽略循环引用
                     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                     ////使用默认Model
@@ -66,13 +71,13 @@ namespace CoreTemplate
             builder.RegisterModule(new AutofacModuleRegister());
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env,TempDbContext dbContext)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, TempDbContext dbContext)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseSwaggerMiddleware(()=> GetType().GetTypeInfo().Assembly.GetManifestResourceStream("CoreTemplate.wwwroot.swagger.ui.index.html"));
+            app.UseSwaggerMiddleware(() => GetType().GetTypeInfo().Assembly.GetManifestResourceStream("CoreTemplate.wwwroot.swagger.ui.index.html"));
 
             //跨域
             app.UseCors(Appsettings.App("Startup", "Cors", "PolicyName"));

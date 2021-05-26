@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
+﻿using System.ComponentModel;
 
-namespace CoreTemplate.Application.Enum
+namespace CoreTemplate.Domain.Shared.Enum
 {
     /// <summary>
     /// 接口详细描述代码

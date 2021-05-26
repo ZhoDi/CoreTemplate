@@ -2,13 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CoreTemplate.Application.Dto.Base;
+using CoreTemplate.Domain.Shared.Enum;
+using CoreTemplate.Domain.Shared.Exception;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoreTemplate.Controllers
 {
     /// <summary>
-    /// Values控制器 配置了Admin权限
+    /// Values控制器
     /// </summary>
     [Route("api/[controller]")]
     [Authorize]
@@ -16,14 +19,14 @@ namespace CoreTemplate.Controllers
     public class ValuesController : ControllerBase
     {
         /// <summary>
-        /// GET api/values/5
+        /// GET api/values
         /// </summary>
-        /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        [HttpGet]
+        public BaseResponse<string> HttpGet()
         {
-            return "value";
+            throw new BaseException("错误",DetailedStatus.DataAlreadyExists);
+            return new BaseResponse<string>("value");
         }
     }
 }

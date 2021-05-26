@@ -10,7 +10,7 @@ namespace CoreTemplate.Application.Helper
 {
     public class Appsettings
     {
-        static IConfiguration Configuration { get; set; }
+        private static IConfiguration Configuration { get; set; }
 
         /// <summary>
         /// 传递根目录初始化Appsettings

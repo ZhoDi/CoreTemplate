@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using CoreTemplate.Application.Dto.Base;
 
 namespace CoreTemplate.Application.IServices
 {
@@ -11,8 +12,8 @@ namespace CoreTemplate.Application.IServices
     {
         string GetUserRoleNameStr(string name, string pwd);
 
-        User GetUserInfoByName(string name);
+        User GetUserInfoByLoginId(string loginId);
 
-        void RegisterUser(UserRegisterDto userRegisterDto);
+        BaseResponse RegisterUser(UserRegisterDto userRegisterDto);
     }
 }

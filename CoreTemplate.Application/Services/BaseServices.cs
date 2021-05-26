@@ -40,7 +40,7 @@ namespace CoreTemplate.Application.Services
             return dtos;
         }
 
-        public List<TDto> GetAllList(System.Linq.Expressions.Expression<Func<TEntity, bool>> predicate)
+        public List<TDto> GetAllList(Expression<Func<TEntity, bool>> predicate)
         {
             var result = Repository.GetAllList(predicate);
             var dtos = Mapper.Map<List<TDto>>(result);

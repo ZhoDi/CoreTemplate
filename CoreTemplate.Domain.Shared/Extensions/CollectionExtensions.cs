@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CoreTemplate.Domain.Extensions
+namespace CoreTemplate.Domain.Shared.Extensions
 {
     public static class CollectionExtensions
     {

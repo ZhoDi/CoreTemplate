@@ -6,14 +6,13 @@
     <members>
         <member name="T:CoreTemplate.Controllers.ValuesController">
             <summary>
-            Values控制器 配置了Admin权限
+            Values控制器
             </summary>
         </member>
-        <member name="M:CoreTemplate.Controllers.ValuesController.Get(System.Int32)">
+        <member name="M:CoreTemplate.Controllers.ValuesController.HttpGet">
             <summary>
-            GET api/values/5
+            GET api/values
             </summary>
-            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="T:CoreTemplate.Extension.AuthorizationSetup">
@@ -36,10 +35,18 @@
             Swagger 服务
             </summary>
         </member>
-        <member name="T:CoreTemplate.Filters.ExceptionAttribute">
+        <member name="T:CoreTemplate.Filters.GlobalExceptionFilter">
             <summary>
             全局异常处理
             </summary>
+        </member>
+        <member name="M:CoreTemplate.Filters.GlobalExceptionFilter.WriteLog(System.String,System.Exception)">
+            <summary>
+            自定义返回格式
+            </summary>
+            <param name="throwMsg"></param>
+            <param name="ex"></param>
+            <returns></returns>
         </member>
         <member name="T:CoreTemplate.Middlewares.SwaggerMiddleware">
             <summary>

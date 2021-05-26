@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using CoreTemplate.Application.Enum;
+using CoreTemplate.Domain.Shared.Enum;
+using EnumsNET;
 
 namespace CoreTemplate.Application.Dto.Base
 {
@@ -10,16 +11,6 @@ namespace CoreTemplate.Application.Dto.Base
     /// </summary>
     public class BaseResponse
     {
-        /// <summary>
-        /// 网关状态
-        /// </summary>
-        public GatewayStatus GatewayStatus { get; set; }
-
-        /// <summary>
-        /// 网关状态描述
-        /// </summary>
-        public string GatewayMessage { get; set; }
-
         /// <summary>
         /// 详细状态
         /// </summary>
@@ -32,10 +23,8 @@ namespace CoreTemplate.Application.Dto.Base
 
         public BaseResponse()
         {
-            GatewayStatus = GatewayStatus.Success;
-            GatewayMessage = "成功";
             DetailedStatus = DetailedStatus.Success;
-            DetailedMessage = "成功";
+            DetailedMessage = DetailedStatus.AsString(EnumFormat.Description);
         }
     }
 
@@ -45,17 +34,7 @@ namespace CoreTemplate.Application.Dto.Base
     public class BaseResponse<T>
     {
         /// <summary>
-        /// 网关状态
-        /// </summary>
-        public GatewayStatus GatewayStatus { get; set; }
-
-        /// <summary>
-        /// 网关状态描述
-        /// </summary>
-        public string GatewayMessage { get; set; }
-
-        /// <summary>
-        /// 详细交易状态
+        /// 详细状态
         /// </summary>
         public DetailedStatus DetailedStatus { get; set; }
 
@@ -69,6 +48,14 @@ namespace CoreTemplate.Application.Dto.Base
         /// </summary>
         public T Data { get; set; }
 
+        /// <summary>
+        /// 默认构造函数
+        /// </summary>
+        public BaseResponse()
+        {
+            DetailedStatus = DetailedStatus.Success;
+            DetailedMessage = DetailedStatus.AsString(EnumFormat.Description);
+        }
 
         /// <summary>
         /// 默认构造函数
@@ -76,11 +63,8 @@ namespace CoreTemplate.Application.Dto.Base
         public BaseResponse(T data)
         {
             Data = data;
-
-            GatewayStatus = GatewayStatus.Success;
-            GatewayMessage = "成功";
             DetailedStatus = DetailedStatus.Success;
-            DetailedMessage = "成功";
+            DetailedMessage = DetailedStatus.AsString(EnumFormat.Description);
         }
     }
 

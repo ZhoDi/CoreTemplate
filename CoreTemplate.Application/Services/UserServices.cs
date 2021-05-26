@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CoreTemplate.Application.Dto.Base;
 
 namespace CoreTemplate.Application.Services
 {
@@ -20,7 +21,7 @@ namespace CoreTemplate.Application.Services
         private readonly IRepository<Role, int> _roleRepository;
 
         public UserServices(IRepository<User, int> userRepository, IRepository<UserRole, int> userRoleRepository, IRepository<Role, int> roleRepository,
-            IMapper Mapper) : base(userRepository, Mapper)
+            IMapper mapper) : base(userRepository, mapper)
         {
             _userRepository = userRepository;
             _userRoleRepository = userRoleRepository;
@@ -28,9 +29,9 @@ namespace CoreTemplate.Application.Services
         }
 
         [Caching]
-        public User GetUserInfoByName(string name)
+        public User GetUserInfoByLoginId(string loginId)
         {
-            var user = _userRepository.FirstOrDefault(p => p.Name == name);
+            var user = _userRepository.FirstOrDefault(p => p.LoginId == loginId);
             return user;
         }
 
@@ -55,7 +56,7 @@ namespace CoreTemplate.Application.Services
         /// 用户注册
         /// </summary>
         /// <param name="userRegisterDto"></param>
-        public void RegisterUser(UserRegisterDto userRegisterDto)
+        public BaseResponse RegisterUser(UserRegisterDto userRegisterDto)
         {
             var userInfo = Mapper.Map<User>(userRegisterDto);
 
@@ -69,6 +70,8 @@ namespace CoreTemplate.Application.Services
 
 
             _userRoleRepository.Insert(userRole);
+
+            return new BaseResponse();
         }
     }
 }

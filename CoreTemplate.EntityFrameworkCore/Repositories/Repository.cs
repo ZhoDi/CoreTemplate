@@ -1,5 +1,4 @@
 ﻿using CoreTemplate.Domain;
-using CoreTemplate.Domain.Extensions;
 using CoreTemplate.Domain.IRepositories;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -9,6 +8,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using CoreTemplate.Domain.APIModel;
+using CoreTemplate.Domain.Shared.Extensions;
 
 namespace CoreTemplate.EntityFrameworkCore.Repositories
 {

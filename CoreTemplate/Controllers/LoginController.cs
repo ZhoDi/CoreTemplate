@@ -24,7 +24,7 @@ namespace CoreTemplate.Controllers
         {
             string jwtStr = string.Empty;
             var userRole = _userService.GetUserRoleNameStr(model.LoginId, model.Password);
-            var userInfo = _userService.GetUserInfoByName(model.LoginId);
+            var userInfo = _userService.GetUserInfoByLoginId(model.LoginId);
 
             if (!string.IsNullOrEmpty(userRole))
             {
@@ -49,8 +49,7 @@ namespace CoreTemplate.Controllers
         [HttpPost("RegisterUser")]
         public BaseResponse RegisterUser([FromBody]UserRegisterDto userRegisterDto)
         {
-            _userService.RegisterUser(userRegisterDto);
-            return new BaseResponse();
+            return _userService.RegisterUser(userRegisterDto);
         }
     }
 }
