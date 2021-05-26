@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 
-namespace CoreTemplate.Extension
+namespace CoreTemplate.ServiceExtensions
 {
     /// <summary>
     /// Swagger 服务

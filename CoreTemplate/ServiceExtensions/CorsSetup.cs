@@ -2,7 +2,7 @@
 using CoreTemplate.Application.Helper;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace CoreTemplate.Extension
+namespace CoreTemplate.ServiceExtensions
 {
     /// <summary>
     /// Cors 配置

@@ -12,9 +12,9 @@ using Newtonsoft.Json.Serialization;
 using CoreTemplate.Application.Helper;
 using System.Linq;
 using System.Reflection;
-using CoreTemplate.Extension;
 using CoreTemplate.Filters;
 using CoreTemplate.Middlewares;
+using CoreTemplate.ServiceExtensions;
 
 namespace CoreTemplate
 {

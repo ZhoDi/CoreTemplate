@@ -11,7 +11,7 @@ using CoreTemplate.Application.Helper;
 using CoreTemplate.Domain.IRepositories;
 using CoreTemplate.EntityFrameworkCore.Repositories;
 
-namespace CoreTemplate.Extension
+namespace CoreTemplate.ServiceExtensions
 {
     public class AutofacModuleRegister : Autofac.Module
     {

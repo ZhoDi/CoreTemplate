@@ -15,26 +15,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="T:CoreTemplate.Extension.AuthorizationSetup">
-            <summary>
-            授权服务
-            </summary>
-        </member>
-        <member name="T:CoreTemplate.Extension.AutoMapperSetup">
-            <summary>
-            AutoMapper服务
-            </summary>
-        </member>
-        <member name="T:CoreTemplate.Extension.CorsSetup">
-            <summary>
-            Cors 配置
-            </summary>
-        </member>
-        <member name="T:CoreTemplate.Extension.SwaggerSetup">
-            <summary>
-            Swagger 服务
-            </summary>
-        </member>
         <member name="T:CoreTemplate.Filters.GlobalExceptionFilter">
             <summary>
             全局异常处理
@@ -51,6 +31,26 @@
         <member name="T:CoreTemplate.Middlewares.SwaggerMiddleware">
             <summary>
             Swagger 中间件
+            </summary>
+        </member>
+        <member name="T:CoreTemplate.ServiceExtensions.AuthorizationSetup">
+            <summary>
+            授权服务
+            </summary>
+        </member>
+        <member name="T:CoreTemplate.ServiceExtensions.AutoMapperSetup">
+            <summary>
+            AutoMapper服务
+            </summary>
+        </member>
+        <member name="T:CoreTemplate.ServiceExtensions.CorsSetup">
+            <summary>
+            Cors 配置
+            </summary>
+        </member>
+        <member name="T:CoreTemplate.ServiceExtensions.SwaggerSetup">
+            <summary>
+            Swagger 服务
             </summary>
         </member>
     </members>

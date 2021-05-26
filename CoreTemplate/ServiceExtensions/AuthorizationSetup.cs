@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
-namespace CoreTemplate.Extension
+namespace CoreTemplate.ServiceExtensions
 {
     /// <summary>
     /// 授权服务

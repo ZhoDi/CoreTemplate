@@ -1,7 +1,7 @@
 ﻿using CoreTemplate.Application.AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace CoreTemplate.Extension
+namespace CoreTemplate.ServiceExtensions
 {
     /// <summary>
     /// AutoMapper服务
