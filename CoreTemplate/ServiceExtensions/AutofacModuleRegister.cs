@@ -24,13 +24,13 @@ namespace CoreTemplate.ServiceExtensions
             //builder.RegisterType<UserServices>().As<IUserServices>();
 
             //注册仓储泛型
-            builder.RegisterGeneric(typeof(Repository<,>)).As(typeof(IRepository<,>)).InstancePerLifetimeScope();
+            builder.RegisterGeneric(typeof(Repository<,>)).As(typeof(IRepository<,>)).InstancePerDependency();
 
             //注册AutoMapper
             builder.RegisterType<Mapper>().As<IMapper>().SingleInstance();
 
-            builder.RegisterType<MemoryCaching>().As<ICaching>().InstancePerLifetimeScope();
-            builder.RegisterType<RedisCacheManager>().As<IRedisCacheManager>().InstancePerLifetimeScope();
+            builder.RegisterType<MemoryCaching>().As<ICaching>().InstancePerDependency();
+            builder.RegisterType<RedisCacheManager>().As<IRedisCacheManager>().InstancePerDependency();
 
             //builder.RegisterType<AutoMapperObjectMapper>().As<Application.Application.IObjectMapper>().InstancePerDependency();
             //builder.Register<IMapper>(ctx => new Mapper(ctx.Resolve<IConfigurationProvider>(), ctx.Resolve)).InstancePerDependency();
@@ -57,11 +57,10 @@ namespace CoreTemplate.ServiceExtensions
             }
 
             //注册Application.Services中的对象,Services中的类要以Services结尾，否则注册失败
-            var dataAccess = Assembly.Load("CoreTemplate.Application");
-            builder.RegisterAssemblyTypes(dataAccess)
+            builder.RegisterAssemblyTypes(Assembly.Load("CoreTemplate.Application"))
                 .Where(a => a.Name.EndsWith("Services"))
                 .AsImplementedInterfaces()
-                .InstancePerLifetimeScope()
+                .InstancePerDependency()
                 .EnableInterfaceInterceptors()//引用Autofac.Extras.DynamicProxy; 关闭AOP只需要注释这两行
                 .InterceptedBy(aopTypeList.ToArray());//拦截器注入
         }

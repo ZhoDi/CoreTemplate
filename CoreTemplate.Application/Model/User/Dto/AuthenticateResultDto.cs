@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CoreTemplate.Domain.APIModel.User
+﻿namespace CoreTemplate.Application.Model.User.Dto
 {
-    public class AuthenticateResultModel
+    public class AuthenticateResultDto
     {
         public string AccessToken { get; set; }
 

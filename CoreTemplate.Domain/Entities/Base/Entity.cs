@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace CoreTemplate.Domain
+namespace CoreTemplate.Domain.Entities.Base
 {
     public abstract class Entity<TPrimaryKey> : IEntity<TPrimaryKey>
     {
@@ -24,7 +23,7 @@ namespace CoreTemplate.Domain
         /// <summary>
         /// 创建时间
         /// </summary>
-        public long CreateTime { get; set; }
+        public DateTime CreateTime { get; set; }
 
         /// <summary>
         /// 修改人Id
@@ -39,7 +38,7 @@ namespace CoreTemplate.Domain
         /// <summary>
         /// 修改时间
         /// </summary>
-        public long? UpdateTime { get; set; }
+        public DateTime? UpdateTime { get; set; }
 
         /// <summary>
         /// 是否删除

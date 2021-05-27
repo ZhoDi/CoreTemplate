@@ -60,9 +60,7 @@ namespace CoreTemplate.Application.Services
         {
             var userInfo = Mapper.Map<User>(userRegisterDto);
 
-            userInfo.CreateTime = DateTimeOffset.Now.ToUnixTimeSeconds();
-
-
+            userInfo.CreateTime = DateTime.Now;
             var user = _userRepository.Insert(userInfo);
             var role = _roleRepository.FirstOrDefault(p => p.Name == "User");
 

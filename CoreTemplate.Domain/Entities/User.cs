@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
+using CoreTemplate.Domain.Entities.Base;
 
 namespace CoreTemplate.Domain.Entities
 {
@@ -31,6 +32,12 @@ namespace CoreTemplate.Domain.Entities
         /// </summary>
         [Column(TypeName = "int(1)")]
         public int Gender { get; set; }
+
+        /// <summary>
+        /// 生日
+        /// </summary>
+        [Column(TypeName = "datetime")]
+        public DateTime Birthday { get; set; }
 
         /// <summary>
         /// 邮箱

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CoreTemplate.Domain
+﻿namespace CoreTemplate.Domain.Entities.Base
 {
     /// <summary>
     /// 定义含有主键Id的实体类接口

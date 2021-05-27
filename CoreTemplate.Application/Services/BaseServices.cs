@@ -11,7 +11,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-using CoreTemplate.Domain.APIModel;
+using CoreTemplate.Domain.Entities.Base;
+using CoreTemplate.Domain.Model;
 
 namespace CoreTemplate.Application.Services
 {

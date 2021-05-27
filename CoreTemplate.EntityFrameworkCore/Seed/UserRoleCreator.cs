@@ -21,7 +21,7 @@ namespace CoreTemplate.EntityFrameworkCore.Seed
             {
                 Name = ConstName.Admin, 
                 IsDeleted = false, 
-                CreateTime = DateTimeOffset.Now.ToUnixTimeSeconds(),
+                CreateTime = DateTime.Now,
                 CreateUser = 1,
                 CreateUserName = ConstName.Admin
             }).Entity;
@@ -30,7 +30,7 @@ namespace CoreTemplate.EntityFrameworkCore.Seed
             {
                 Name = ConstName.User,
                 IsDeleted = false,
-                CreateTime = DateTimeOffset.Now.ToUnixTimeSeconds(),
+                CreateTime = DateTime.Now,
                 CreateUser = 1,
                 CreateUserName = ConstName.Admin,
             }).Entity;
@@ -44,10 +44,11 @@ namespace CoreTemplate.EntityFrameworkCore.Seed
                     Name = ConstName.Admin,
                     Email = "910824572@qq.com",
                     Mobile = "15737652771",
+                    Birthday = DateTime.Now,
                     IsDeleted = false,
                     CreateUser = 1,
                     CreateUserName = ConstName.Admin,
-                    CreateTime = DateTimeOffset.Now.ToUnixTimeSeconds(),
+                    CreateTime = DateTime.Now,
                     Avatar = "",
                     Password = "123456",
                     Gender = 1
@@ -63,7 +64,7 @@ namespace CoreTemplate.EntityFrameworkCore.Seed
                     RoleId = roleForAdmin.Id,
                     CreateUser = 1,
                     CreateUserName = ConstName.Admin,
-                    CreateTime = DateTimeOffset.Now.ToUnixTimeSeconds(),
+                    CreateTime = DateTime.Now,
                 });
                 dbContext.UserRoles.Add(new UserRole()
                 {
@@ -71,7 +72,7 @@ namespace CoreTemplate.EntityFrameworkCore.Seed
                     RoleId = roleForUser.Id,
                     CreateUser = 1,
                     CreateUserName = ConstName.Admin,
-                    CreateTime = DateTimeOffset.Now.ToUnixTimeSeconds(),
+                    CreateTime = DateTime.Now,
                 });
             }
             dbContext.SaveChanges();

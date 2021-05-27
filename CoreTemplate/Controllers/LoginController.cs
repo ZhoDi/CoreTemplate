@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using CoreTemplate.Application.IServices;
 using CoreTemplate.Application.Model.Base;
 using CoreTemplate.Application.Model.User.Dto;
-using CoreTemplate.Domain.APIModel.User;
 using CoreTemplate.Domain.Shared.Helper;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,7 +19,7 @@ namespace CoreTemplate.Controllers
         }
 
         [HttpPost("Authenticate")]
-        public BaseResponse<AuthenticateResultModel> GetToken([FromBody]AuthenticateModel model)
+        public BaseResponse<AuthenticateResultDto> GetToken([FromBody]AuthenticateDto model)
         {
             string jwtStr = string.Empty;
             var userRole = _userService.GetUserRoleNameStr(model.LoginId, model.Password);
@@ -33,17 +32,17 @@ namespace CoreTemplate.Controllers
             }
             else
             {
-                return new BaseResponse<AuthenticateResultModel>(new AuthenticateResultModel());
+                return new BaseResponse<AuthenticateResultDto>(new AuthenticateResultDto());
             }
 
-            var res = new AuthenticateResultModel
+            var res = new AuthenticateResultDto
             {
                 AccessToken = jwtStr,
                 ExpireInSeconds = JwtHelper.SerializeJwt(jwtStr).Expiration,
                 UserId = userInfo.Id
             };
 
-            return new BaseResponse<AuthenticateResultModel>(res);
+            return new BaseResponse<AuthenticateResultDto>(res);
         }
 
         [HttpPost("RegisterUser")]

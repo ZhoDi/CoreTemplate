@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CoreTemplate.Domain.APIModel
+namespace CoreTemplate.Domain.Model
 {
     public class PageModel<T>
         where T : class

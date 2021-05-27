@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using CoreTemplate.Domain.Entities.Base;
 
 namespace CoreTemplate.Domain.Entities
 {
