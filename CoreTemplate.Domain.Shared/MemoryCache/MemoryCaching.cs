@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.Caching.Memory;
-using System;
+﻿using System;
+using Microsoft.Extensions.Caching.Memory;
 
-namespace CoreTemplate.Application.Aop.Memory
+namespace CoreTemplate.Domain.Shared.MemoryCache
 {
     public class MemoryCaching : ICaching
     {

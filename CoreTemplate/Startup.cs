@@ -91,6 +91,8 @@ namespace CoreTemplate
 
             //跨域
             app.UseCors(Appsettings.App("Startup", "Cors", "PolicyName"));
+            // 跳转https
+            //app.UseHttpsRedirection();
             // 使用静态文件
             app.UseStaticFiles();
             // 使用cookie

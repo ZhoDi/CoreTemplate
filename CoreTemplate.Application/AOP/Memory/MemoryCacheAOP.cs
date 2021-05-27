@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using CoreTemplate.Domain.Shared.Attribute;
+using CoreTemplate.Domain.Shared.MemoryCache;
 
 namespace CoreTemplate.Application.Aop.Memory
 {

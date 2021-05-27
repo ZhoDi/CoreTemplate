@@ -9,6 +9,7 @@ using CoreTemplate.Application.Aop.Memory;
 using CoreTemplate.Application.Application.Redis;
 using CoreTemplate.Domain.IRepositories;
 using CoreTemplate.Domain.Shared.Helper;
+using CoreTemplate.Domain.Shared.MemoryCache;
 using CoreTemplate.EntityFrameworkCore.Repositories;
 
 namespace CoreTemplate.ServiceExtensions

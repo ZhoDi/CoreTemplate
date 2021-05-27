@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace CoreTemplate.Application.Aop.Memory
+﻿namespace CoreTemplate.Domain.Shared.MemoryCache
 {
     public interface ICaching
     {
