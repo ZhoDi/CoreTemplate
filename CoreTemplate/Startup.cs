@@ -51,7 +51,7 @@ namespace CoreTemplate
             #endregion
 
             //1.开启允许同步IO
-            //2.关闭自带模型验证,在
+            //2.关闭自带模型验证,在GlobalRequestFilter中进行模型验证
             services.Configure<KestrelServerOptions>(o => o.AllowSynchronousIO = true)
                 //.Configure<IISServerOptions>(o => o.AllowSynchronousIO = true)
                 .Configure<ApiBehaviorOptions>(o => o.SuppressModelStateInvalidFilter = true);

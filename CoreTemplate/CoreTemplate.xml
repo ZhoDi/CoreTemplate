@@ -39,6 +39,11 @@
             全局请求过滤器
             </summary>
         </member>
+        <member name="T:CoreTemplate.Middlewares.IpLimitMiddleware">
+            <summary>
+            IpLimitMiddleware
+            </summary>
+        </member>
         <member name="T:CoreTemplate.Middlewares.SwaggerMiddleware">
             <summary>
             Swagger 中间件

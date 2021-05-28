@@ -10,6 +10,7 @@ using CoreTemplate.Domain.Shared.Enum;
 using CoreTemplate.Domain.Shared.Exception;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace CoreTemplate.Controllers
 {
