@@ -31,7 +31,7 @@ namespace CoreTemplate.Application.Aop.Log
                 Directory.CreateDirectory(path);
             }
 
-            string fileName = path + $@"\InterceptLog-{DateTime.Now.ToString("yyyyMMddHHmmss")}.log";
+            string fileName = path + $@"\InterceptLog-{DateTime.Now:yyyyMMddHHmmss}.log";
 
             StreamWriter sw = File.AppendText(fileName);
             sw.WriteLine(dataIntercept);
