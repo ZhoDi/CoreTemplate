@@ -34,8 +34,6 @@ namespace CoreTemplate
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton(new Appsettings(Configuration));
-            services.AddScoped<MemoryCacheAttribute>();
-            services.AddScoped<ICaching, MemoryCaching > ();
 
             services.AddCorsSetup();
             services.AddAuthorizationSetup();
