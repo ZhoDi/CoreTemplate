@@ -11,7 +11,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Linq;
 using System.Reflection;
+using CoreTemplate.Domain.Shared.Attribute;
 using CoreTemplate.Domain.Shared.Helper;
+using CoreTemplate.Domain.Shared.MemoryCache;
 using CoreTemplate.Filters;
 using CoreTemplate.Middlewares;
 using CoreTemplate.ServiceExtensions;
@@ -32,6 +34,8 @@ namespace CoreTemplate
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton(new Appsettings(Configuration));
+            services.AddScoped<MemoryCacheAttribute>();
+            services.AddScoped<ICaching, MemoryCaching > ();
 
             services.AddCorsSetup();
             services.AddAuthorizationSetup();
