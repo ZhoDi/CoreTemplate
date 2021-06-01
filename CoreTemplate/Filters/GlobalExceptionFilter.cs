@@ -44,6 +44,7 @@ namespace CoreTemplate.Filters
             }
 
             _loggerHelper.LogError(WriteLog(dto.DetailedMessage, context.Exception));
+
             context.Result = new ContentResult() { Content = JsonConvert.SerializeObject(dto) };
         }
 
